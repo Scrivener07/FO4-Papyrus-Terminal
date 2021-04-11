@@ -57,7 +57,7 @@ public:
 	float			isDown;		// 38
 	float			timer;		// 3C (hold duration)
 };
-STATIC_ASSERT(sizeof(ButtonEvent) == 0x040);
+//STATIC_ASSERT(sizeof(ButtonEvent) == 0x040);
 
 // 30
 class CharacterEvent : public InputEvent
@@ -87,7 +87,7 @@ class ThumbstickEvent : public IDEvent, public InputEvent
 public:
 	UInt32 unk20[6];
 };
-STATIC_ASSERT(sizeof(ThumbstickEvent) == 0x048);
+//STATIC_ASSERT(sizeof(ThumbstickEvent) == 0x048);
 
 // 30
 class DeviceConnectEvent : public InputEvent
@@ -103,7 +103,7 @@ class KinectEvent : public IDEvent, public InputEvent
 public:
 	UInt32 unk28[4];
 };
-STATIC_ASSERT(sizeof(KinectEvent) == 0x040);
+//STATIC_ASSERT(sizeof(KinectEvent) == 0x040);
 
 // EF0
 class InputEventTable
@@ -151,7 +151,7 @@ public:
 	UInt64		unk060;
 	UInt64		unk068; // init to 0
 };
-STATIC_ASSERT(offsetof(BSInputDevice, unk058) == 0x058);
+//STATIC_ASSERT(offsetof(BSInputDevice, unk058) == 0x058);
 STATIC_ASSERT(sizeof(BSInputDevice) == 0x70);
 
 class BSKeyboardDevice : public BSInputDevice
@@ -252,7 +252,7 @@ private:
 class PlayerInputHandler : public BSInputEventUser
 {
 public:
-	PlayerInputHandler() : BSInputEventUser(true), 
+	PlayerInputHandler() : BSInputEventUser(true),
 		unk10(0), unk18(0), unk19(0), unk1A(0), unk1C(0), unk20(0), unk21(0), unk22(0), unk24(0), unk28(0), unk2C(0) { }
 
 	virtual void Unk_09() { };
@@ -263,7 +263,7 @@ public:
 	UInt8	unk19;	// 19
 	UInt16	unk1A;	// 1A
 	UInt32	unk1C;	// 1C
-	UInt8	unk20;  // 20 
+	UInt8	unk20;  // 20
 	UInt8	unk21;	// 21 unk21 == 1 has something to do with an additional vfunc
 	UInt16	unk22;	// 22
 	UInt32	unk24;	// 24
