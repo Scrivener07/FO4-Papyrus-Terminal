@@ -51,6 +51,10 @@ Temporary Items
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
 
+# IDE
+RECOVER_*.xfl
+RECOVER_*.fla
+
 # Build and User Settings
 bin/
 bin-debug/
