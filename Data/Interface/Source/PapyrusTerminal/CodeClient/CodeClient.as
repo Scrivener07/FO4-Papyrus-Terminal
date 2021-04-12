@@ -16,8 +16,6 @@
 	// https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-win32_find_dataa
 	// http://www.cs.rpi.edu/courses/fall01/os/WIN32_FIND_DATA.html <---
 
-	// Game "E:\\Games\\Steam\\steamapps\\common\\Fallout 4"
-
 	public class CodeClient extends MovieClip
 	{
 		// Menu
@@ -25,7 +23,6 @@
 
 		// Directories
 		private var CurrentDirectory:Vector.<String>;
-
 		private function get CurrentPath():String
 		{
 			return CurrentDirectory.join("\\");
@@ -40,8 +37,6 @@
 			return value;
 		}
 
-
-
 		// External Events
 		private const TYPE_LoadCompleteEvent:String = "PapyrusTerminal:Example03:TYPE_LoadCompleteEvent";
 
@@ -53,10 +48,7 @@
 		{
 			Debug.Prefix = "PapyrusTerminal";
 			Debug.WriteLine("[CMD]", "(CTOR)");
-
 			CurrentDirectory = new Vector.<String>();
-			CurrentDirectory.push("Fallout 4");
-
 			addEventListener(Event.ADDED_TO_STAGE, this.OnAddedToStage);
 		}
 
@@ -64,6 +56,8 @@
 		protected function OnAddedToStage(e:Event):void
 		{
 			Debug.WriteLine("[CMD]", "(OnAddedToStage)", "swf:"+stage.loaderInfo.url);
+			CurrentDirectory.push("Fallout 4");
+
 			try
 			{
 				MenuRoot = stage.getChildByName("root1") as PapyrusTerminal;

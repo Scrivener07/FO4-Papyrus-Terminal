@@ -1,5 +1,3 @@
-// https://github.com/kassent/BetterConsole
-
 // F4SE
 #include "f4se/PluginAPI.h"
 #include "f4se/PapyrusNativeFunctions.h"
@@ -12,57 +10,24 @@
 #include <shlobj.h>	// CSIDL_MYCODUMENTS
 
 // Project
+#include "PapyrusTerminal.h"
 #include "Scaleform.h"
+#include "Papyrus.h"
 
-static F4SEPapyrusInterface* g_papyrus = NULL;
+
+// Fields
+// ---------------------------------------------
+
 
 IDebugLog               gLog;
 PluginHandle            g_pluginHandle = kPluginHandle_Invalid;
-F4SEScaleformInterface* g_scaleform = nullptr;
-F4SEMessagingInterface* g_messaging = nullptr;
+F4SEPapyrusInterface*   g_papyrus   = NULL;
+F4SEMessagingInterface* g_messaging = NULL;
+F4SEScaleformInterface* g_scaleform = NULL;
 
 
-namespace Scripting
-{
-	void Test(StaticFunctionTag *base)
-	{
-		_MESSAGE("Papyrus: @Log TestClass.Test()");
-		Console_Print("Papyrus: @Console TestClass.Test()");
-	}
-}
-
-bool RegisterFuncs(VirtualMachine* vm)
-{
-	vm->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("Test", "PapyrusTerminal:KERNAL", Scripting::Test, vm));
-	return true;
-}
-
-
-bool ScaleformCallback(GFxMovieView* view, GFxValue* value)
-{
-	GFxMovieRoot* movieRoot = view->movieRoot;
-	if (movieRoot)
-	{
-		GFxValue loaderInfo;
-		if (movieRoot->GetVariable(&loaderInfo, "root.loaderInfo.url"))
-		{
-			std::string sResult = loaderInfo.GetString();
-			if (sResult.find("TerminalHolotapeMenu.swf") != std::string::npos)
-			{
-				_MESSAGE("Using Movie: TerminalHolotapeMenu.swf");
-				RegisterFunction<PapyrusTerminal_WriteLog>(value, view->movieRoot, "WriteLog");
-			}
-
-			if (sResult.find("PapyrusTerminal.swf") != std::string::npos)
-			{
-				_MESSAGE("Using Movie: PapyrusTerminal.swf");
-				RegisterFunction<PapyrusTerminal_WriteLog>(value, view->movieRoot, "WriteLog");
-			}
-		}
-	}
-	return true;
-}
-
+// Messaging
+// ---------------------------------------------
 
 class MenuOpenCloseHandler : public BSTEventSink<MenuOpenCloseEvent>
 {
@@ -102,74 +67,94 @@ void F4SEMessageHandler(F4SEMessagingInterface::Message* msg)
 }
 
 
-/* Plugin Query */
+// XSE Plugin
+// ---------------------------------------------
+
 extern "C"
 {
+	/// <summary>
+	/// The XSE plugin query handler.
+	/// </summary>
+	/// <param name="f4se">The XSE plugin interface to use.</param>
+	/// <param name="info">The XSE plugin information to use.</param>
+	/// <returns>true on success</returns>
 	bool F4SEPlugin_Query(const F4SEInterface* f4se, PluginInfo* info)
 	{
-		gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Fallout4\\F4SE\\PapyrusTerminal.log");
+		// Configure debug logging
+		gLog.OpenRelative(CSIDL_MYDOCUMENTS, PLUGIN_LOG_FILE);
 		gLog.SetPrintLevel(IDebugLog::kLevel_Error);
 		gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 
-		// populate info structure
+		// Populate the XSE plugin info structure
 		info->infoVersion = PluginInfo::kInfoVersion;
-		info->name = "PapyrusTerminal";
-		info->version = 1;
+		info->name = PLUGIN_NAME;
+		info->version = PLUGIN_VERSION;
 
+		// Aquire an XSE plugin identifier
 		g_pluginHandle = f4se->GetPluginHandle();
 
-
+		// Do a version check
 		if (f4se->isEditor)
 		{
-			_MESSAGE("loaded in editor, marking as incompatible");
+			_MESSAGE("Main::F4SEPlugin_Query(): Loaded in editor, marking as incompatible.");
 			return false;
 		}
 		else if (f4se->runtimeVersion != RUNTIME_VERSION_1_10_163)
 		{
-			_MESSAGE("unsupported runtime version %d", f4se->runtimeVersion);
+			_MESSAGE("Main::F4SEPlugin_Query(): Unsupported runtime version %d", f4se->runtimeVersion);
 			return false;
 		}
 
+		// Query the papyrus interface
+		g_papyrus = (F4SEPapyrusInterface*)f4se->QueryInterface(kInterface_Papyrus);
+		if (!g_papyrus)
+		{
+			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Papyrus interface.");
+			return false;
+		}
+
+		// Query the scaleform interface
 		g_scaleform = (F4SEScaleformInterface*)f4se->QueryInterface(kInterface_Scaleform);
 		if (!g_scaleform)
 		{
-			_FATALERROR("couldn't get scaleform interface");
+			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Scaleform interface.");
 			return false;
 		}
 
+		// Query the messaging interface
 		g_messaging = (F4SEMessagingInterface*)f4se->QueryInterface(kInterface_Messaging);
 		if (!g_messaging)
 		{
-			_FATALERROR("couldn't get messaging interface");
+			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Messaging interface.");
 			return false;
 		}
 
-		_MESSAGE("F4SEPlugin_Query Loaded");
-
-		// supported runtime version
 		return true;
 	}
 
+
+	/// <summary>
+	/// The XSE plugin load handler.
+	/// </summary>
+	/// <param name="f4se"></param>
+	/// <returns>true on success</returns>
 	bool F4SEPlugin_Load(const F4SEInterface * f4se)
 	{
-		g_papyrus = (F4SEPapyrusInterface *)f4se->QueryInterface(kInterface_Papyrus);
-
-		if (g_papyrus->Register(RegisterFuncs))
+		if (g_papyrus->Register(Papyrus::RegisterFunctions))
 		{
-			_MESSAGE("F4SEPlugin_Load Funcs Registered");
+			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Papyrus");
 		}
 
-		if (g_messaging != nullptr)
+		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", F4SEMessageHandler))
 		{
-			g_messaging->RegisterListener(g_pluginHandle, "F4SE", F4SEMessageHandler);
+			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Events");
 		}
 
-		if (g_scaleform)
+		if (g_scaleform->Register("Kernal", Scaleform::RegisterFunctions))
 		{
-			g_scaleform->Register("Kernal", ScaleformCallback);
+			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Scaleform");
 		}
 
-		_MESSAGE("F4SEPlugin_Load Loaded");
 		return true;
 	}
 

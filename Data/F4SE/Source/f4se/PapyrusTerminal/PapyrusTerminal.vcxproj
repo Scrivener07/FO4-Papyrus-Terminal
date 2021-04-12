@@ -149,12 +149,16 @@ If NOT exist %mo2_target% mklink /J %mo2_target% "$(ProjectDir)Data\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="Exports.def" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Papyrus.cpp" />
     <ClCompile Include="Scaleform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Papyrus.h" />
+    <ClInclude Include="PapyrusTerminal.h" />
     <ClInclude Include="Scaleform.h" />
   </ItemGroup>
   <ItemGroup>
