@@ -67,15 +67,15 @@ class MenuOpenCloseHandler : public BSTEventSink<MenuOpenCloseEvent>
 // XSE
 // ---------------------------------------------
 
-void Messaging::MessageHandler(F4SEMessagingInterface::Message* message)
+void Messaging::OnMessage(F4SEMessagingInterface::Message* message)
 {
 	if (message->type == F4SEMessagingInterface::kMessage_GameLoaded)
 	{
-		_MESSAGE("Messaging::MessageHandler(): kMessage_GameLoaded");
+		_MESSAGE("Messaging::OnMessage(): kMessage_GameLoaded");
 		MenuOpenCloseHandler::Register();
 	}
 	else
 	{
-		_WARNING("Messaging::MessageHandler(): The message of type %i was unhandled.", message->type);
+		_WARNING("Messaging::OnMessage(): The message of type %i was unhandled.", message->type);
 	}
 }

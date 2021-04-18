@@ -32,3 +32,6 @@ Function Test() Global Native
 
 ; For Developer Testing Only
 Function Test2(bool argumentA, bool argumentB) Global Native
+
+
+string Function GetDirectoryCurrent() Global Native

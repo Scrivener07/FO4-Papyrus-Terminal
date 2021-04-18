@@ -92,7 +92,7 @@ extern "C"
 	/// <returns>true on success</returns>
 	bool F4SEPlugin_Load(const F4SEInterface * f4se)
 	{
-		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", Messaging::MessageHandler))
+		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", Messaging::OnMessage))
 		{
 			_MESSAGE("Main::F4SEPlugin_Load(): Registered Messaging");
 		}

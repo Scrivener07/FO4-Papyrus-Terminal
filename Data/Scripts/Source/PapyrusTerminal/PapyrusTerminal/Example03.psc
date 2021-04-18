@@ -1,4 +1,4 @@
-Scriptname PapyrusTerminal:Example03 extends PapyrusTerminal:BIOS
+ScriptName PapyrusTerminal:Example03 extends PapyrusTerminal:BIOS
 {The MS Command Line Interface}
 
 ; Menu Base
@@ -16,6 +16,7 @@ int CMD_ARG2 = 2 const
 int CMD_ARG3 = 3 const
 
 ; Command Name
+string COMMAND_HOME = "HOME" const
 string COMMAND_EXIT = "EXIT" const
 string COMMAND_VER = "VER" const
 string COMMAND_HELP = "HELP" const
@@ -27,6 +28,7 @@ string COMMAND_TREE = "TREE" const
 string COMMAND_DATE = "DATE" const
 string COMMAND_TIME = "TIME" const
 
+; Processing
 bool Abort = false
 bool Property Processing Hidden
 	{Represents the abort condition for the command processor.}
@@ -57,6 +59,7 @@ Function UILoadedCallback(bool success, string menuName, string menuRoot, string
 	Abort = false
 	Code = assetInstance
 
+	HOME() ; testing
 	ClearHome()
 	VER()
 	PrintLine("")
@@ -127,6 +130,14 @@ Function Interpret(string line)
 	Else
 		PrintLine("'"+command[CMD]+"' is not recognized as an internal or external command, operable program or batch file.")
 	EndIf
+EndFunction
+
+
+Function HOME()
+	var[] arguments = new var[1]
+	arguments[0] = PapyrusTerminal:KERNAL.GetDirectoryCurrent()
+	UI.Invoke(TerminalHolotapeMenu, Code+".HOME", arguments)
+	Debug.TraceSelf(self, "HOME", arguments)
 EndFunction
 
 

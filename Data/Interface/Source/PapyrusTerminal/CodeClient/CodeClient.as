@@ -22,6 +22,9 @@
 		private var MenuRoot:PapyrusTerminal;
 
 		// Directories
+		private var Home:String = "";
+
+
 		private var CurrentDirectory:Vector.<String>;
 		private function get CurrentPath():String
 		{
@@ -63,19 +66,26 @@
 				MenuRoot = stage.getChildByName("root1") as PapyrusTerminal;
 				// Utility.TraceDisplayList(stage); // its huge
 				Utility.TraceObject(PapyrusTerminal.F4SE);
-				Utility.TraceObject(PapyrusTerminal.F4SE.plugins.Kernal);
-
-				PapyrusTerminal.F4SE.plugins.Kernal.WriteLog("Hello world from AS3!");
 			}
 			catch (error:Error)
 			{
 				Debug.WriteLine("[CMD]", "(OnAddedToStage)", "Exception", String(error));
 			}
+
+			Test_Kernal_WriteLog();
+			// Test_Kernal_GetDirectoryCurrent();
 		}
 
 
 		// Commands
 		//---------------------------------------------
+
+		public function HOME(path:String):void
+		{
+			Debug.WriteLine("[CMD]", "(HOME)", "path:"+path);
+			Home = path;
+		}
+
 
 		//@Papyrus
 		// Displays the name of or changes the current directory.
@@ -137,13 +147,13 @@
 				Debug.WriteLine("[CMD]", "(DIR)", "CurrentPath:"+CurrentPath, "result.length:", result.length);
 
 				var values:Array = new Array(result.length);
-				if(result.length > 0)
+				if (result.length > 0)
 				{
 					var index:int = 0;
 					while(index < result.length)
 					{
 						var isDirectory:String = "  ";
-						if(result[index].isDirectory)
+						if (result[index].isDirectory)
 						{
 							isDirectory = "<DIR>";
 						}
@@ -210,6 +220,44 @@
 					Debug.WriteLine("(CD)", "'"+directory+"'", "+ -- isHidden:   ", entry.isHidden);
 					Debug.WriteLine("");
 				}
+			}
+		}
+
+
+		private function Test_Kernal_WriteLog():void
+		{
+			Debug.WriteLine("[CMD]", "(Test_Kernal_WriteLog)");
+			try
+			{
+				PapyrusTerminal.F4SE.plugins.Kernal.WriteLog("@AS3: Test_Kernal_WriteLog");
+			}
+			catch (error:Error)
+			{
+				Debug.WriteLine("[CMD]", "(Test_Kernal_WriteLog)", "Exception", String(error));
+			}
+		}
+
+
+		private function Test_Kernal_GetDirectoryCurrent():void
+		{
+			Debug.WriteLine("[CMD]", "(Test_Kernal_GetDirectoryCurrent)");
+			try
+			{
+				var directoryCurrent = PapyrusTerminal.F4SE.plugins.Kernal.GetDirectoryCurrent();
+				if (directoryCurrent)
+				{
+					Utility.TraceObject(directoryCurrent);
+					var cd:String = String(directoryCurrent);
+					Debug.WriteLine("[CMD]", "(Test_Kernal_GetDirectoryCurrent)", cd);
+				}
+				else
+				{
+					Debug.WriteLine("[CMD]", "(Test_Kernal_GetDirectoryCurrent)", "{F4SE.plugins.Kernal.GetDirectoryCurrent}", "Returned a null or undefined value.");
+				}
+			}
+			catch (error:Error)
+			{
+				Debug.WriteLine("[CMD]", "(Test_Kernal_GetDirectoryCurrent)", "Exception", String(error));
 			}
 		}
 

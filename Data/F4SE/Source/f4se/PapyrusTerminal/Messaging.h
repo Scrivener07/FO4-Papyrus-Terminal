@@ -3,5 +3,5 @@
 
 namespace Messaging
 {
-	void MessageHandler(F4SEMessagingInterface::Message* message);
+	void OnMessage(F4SEMessagingInterface::Message* message);
 }
