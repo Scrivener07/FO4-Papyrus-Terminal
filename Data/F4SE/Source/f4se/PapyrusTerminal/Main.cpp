@@ -1,74 +1,26 @@
-// F4SE
-#include "f4se/PluginAPI.h"
-#include "f4se/PapyrusNativeFunctions.h"
-#include "F4SE/GameMenus.h"
-#include "f4se/GameReferences.h"
-#include "xbyak/xbyak.h"
-
 // Common
 #include "f4se_common/f4se_version.h"
 #include <shlobj.h>	// CSIDL_MYCODUMENTS
 
+// F4SE
+#include "f4se/PluginAPI.h"
+
 // Project
-#include "PapyrusTerminal.h"
+#include "Main.h"
 #include "Scaleform.h"
 #include "Papyrus.h"
+#include "Messaging.h"
 
 
 // Fields
 // ---------------------------------------------
 
-
 IDebugLog               gLog;
 PluginHandle            g_pluginHandle = kPluginHandle_Invalid;
-F4SEPapyrusInterface*   g_papyrus   = NULL;
 F4SEMessagingInterface* g_messaging = NULL;
+F4SEPapyrusInterface*   g_papyrus   = NULL;
 F4SEScaleformInterface* g_scaleform = NULL;
 
-
-// Messaging
-// ---------------------------------------------
-
-class MenuOpenCloseHandler : public BSTEventSink<MenuOpenCloseEvent>
-{
-public:
-	virtual ~MenuOpenCloseHandler() { };
-	virtual	EventResult	ReceiveEvent(MenuOpenCloseEvent* evn, void* dispatcher) override
-	{
-		static BSFixedString sMenuName("TerminalHolotapeMenu");
-		if (evn->menuName == sMenuName && evn->isOpen)
-		{
-			GFxValue dispatchEvent;
-			GFxValue eventArgs[3];
-			IMenu* pHolotapeMenu = (*g_ui)->GetMenu(sMenuName);
-			auto* movieRoot = pHolotapeMenu->movie->movieRoot;
-			movieRoot->CreateString(&eventArgs[0], "OnPapyrusTerminal"); // @as3
-			eventArgs[1].SetBool(true);
-			eventArgs[2].SetBool(false);
-			movieRoot->CreateObject(&dispatchEvent, "flash.events.Event", eventArgs, 3);
-			movieRoot->Invoke("root.dispatchEvent", nullptr, &dispatchEvent, 1);
-		}
-		return kEvent_Continue;
-	};
-
-	static void Register()
-	{
-		static auto* pHandler = new MenuOpenCloseHandler();
-		(*g_ui)->menuOpenCloseEventSource.AddEventSink(pHandler);
-	}
-};
-
-void F4SEMessageHandler(F4SEMessagingInterface::Message* msg)
-{
-	if (msg->type == F4SEMessagingInterface::kMessage_GameLoaded)
-	{
-		MenuOpenCloseHandler::Register();
-	}
-}
-
-
-// XSE Plugin
-// ---------------------------------------------
 
 extern "C"
 {
@@ -99,7 +51,7 @@ extern "C"
 			_MESSAGE("Main::F4SEPlugin_Query(): Loaded in editor, marking as incompatible.");
 			return false;
 		}
-		else if (f4se->runtimeVersion != RUNTIME_VERSION_1_10_163)
+		else if (f4se->runtimeVersion < MINIMUM_RUNTIME_VERSION)
 		{
 			_MESSAGE("Main::F4SEPlugin_Query(): Unsupported runtime version %d", f4se->runtimeVersion);
 			return false;
@@ -140,22 +92,23 @@ extern "C"
 	/// <returns>true on success</returns>
 	bool F4SEPlugin_Load(const F4SEInterface * f4se)
 	{
-		if (g_papyrus->Register(Papyrus::RegisterFunctions))
+		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", Messaging::MessageHandler))
 		{
-			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Papyrus");
+			_MESSAGE("Main::F4SEPlugin_Load(): Registered Messaging");
 		}
 
-		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", F4SEMessageHandler))
+		if (g_papyrus->Register(Papyrus::RegisterFunctions))
 		{
-			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Events");
+			_MESSAGE("Main::F4SEPlugin_Load(): Registered Papyrus");
 		}
 
 		if (g_scaleform->Register("Kernal", Scaleform::RegisterFunctions))
 		{
-			_MESSAGE("Main:F4SEPlugin_Load(),  Registered Scaleform");
+			_MESSAGE("Main::F4SEPlugin_Load(): Registered Scaleform");
 		}
 
 		return true;
 	}
+
 
 };

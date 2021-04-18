@@ -42,6 +42,7 @@ EndProperty
 Event OnPapyrusTerminalInitialize(ObjectReference refTerminal)
 	Debug.TraceSelf(self, "OnPapyrusTerminalInitialize", "refTerminal:"+refTerminal)
 	PapyrusTerminal:Kernal.Test() ;@XSE
+	PapyrusTerminal:Kernal.Test2(true, true) ;@XSE
 EndEvent
 
 Event OnPapyrusTerminalReady()

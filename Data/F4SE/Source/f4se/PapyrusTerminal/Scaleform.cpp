@@ -1,5 +1,11 @@
 #include "Scaleform.h"
 
+namespace Scaleform { }
+
+/// <summary>
+/// Exposes the XSE log tracing method to Scaleform.
+/// </summary>
+/// <param name="args">The arguments to use.</param>
 void PapyrusTerminal_WriteLog::Invoke(Args* args)
 {
 	ASSERT(args->numArgs >= 1);
@@ -8,14 +14,15 @@ void PapyrusTerminal_WriteLog::Invoke(Args* args)
 }
 
 
-namespace Scaleform
-{
-}
-
-
 // XSE
 // ---------------------------------------------
 
+/// <summary>
+/// Registers the Scaleform functions for this XSE plugin.
+/// </summary>
+/// <param name="view">The scaleform movie view to use.</param>
+/// <param name="F4SERoot">The root Scaleform XSE code object to use.</param>
+/// <returns>true on success</returns>
 bool Scaleform::RegisterFunctions(GFxMovieView* view, GFxValue* F4SERoot)
 {
 	GFxMovieRoot* movieRoot = view->movieRoot;
@@ -27,13 +34,13 @@ bool Scaleform::RegisterFunctions(GFxMovieView* view, GFxValue* F4SERoot)
 			std::string sResult = loaderInfo.GetString();
 			if (sResult.find("TerminalHolotapeMenu.swf") != std::string::npos)
 			{
-				_MESSAGE("Main:ScaleformCallback(), Using Movie: TerminalHolotapeMenu.swf");
+				_MESSAGE("Scaleform::RegisterFunctions(): Using Movie: TerminalHolotapeMenu.swf");
 				RegisterFunction<PapyrusTerminal_WriteLog>(F4SERoot, view->movieRoot, "WriteLog");
 			}
 
 			if (sResult.find("PapyrusTerminal.swf") != std::string::npos)
 			{
-				_MESSAGE("Main:ScaleformCallback(), Using Movie: PapyrusTerminal.swf");
+				_MESSAGE("Scaleform::RegisterFunctions(): Using Movie: PapyrusTerminal.swf");
 				RegisterFunction<PapyrusTerminal_WriteLog>(F4SERoot, view->movieRoot, "WriteLog");
 			}
 		}

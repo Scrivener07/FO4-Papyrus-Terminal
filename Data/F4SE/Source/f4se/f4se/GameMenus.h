@@ -44,7 +44,7 @@ public:
 };
 extern RelocPtr<UIMessageManager*>	g_uiMessageManager;
 
-class IMenu : 
+class IMenu :
 	public SWFToCodeFunctionHandler,
 	public BSInputEventUser
 {
@@ -247,7 +247,7 @@ struct HUDModes
 	bool						bCanBeVisible;
 };
 
-// 
+//
 struct HUDModeInitParams
 {
 	const HUDModeType*			validHUDModes;
@@ -290,7 +290,7 @@ public:
 	DEFINE_MEMBER_FN_3(Impl_ctor, HUDComponentBase *, 0x00A22A70, GFxValue * parent, const char * componentName, const HUDModeInitParams* initParams);
 	DEFINE_MEMBER_FN_0(Impl_IsVisible, bool, 0x00A22DB0);
 	DEFINE_MEMBER_FN_0(Impl_UpdateComponent, void, 0x00A22B10);
-	
+
 };
 STATIC_ASSERT(offsetof(HUDComponentBase, hudModes) == 0xC8);
 STATIC_ASSERT(offsetof(HUDComponentBase, fadePerSecond) == 0xE8);
@@ -343,11 +343,11 @@ class PipboyQuestMenu : public PipboySubMenu
 {
 public:
 
-	virtual ~PipboyQuestMenu();	
+	virtual ~PipboyQuestMenu();
 };
 
 
-// 18 
+// 18
 class PipboyValue
 {
 public:
@@ -369,7 +369,7 @@ class PipboyPrimitiveValue : public PipboyValue
 {
 public:
 
-	T	value;	// 18	
+	T	value;	// 18
 };
 STATIC_ASSERT(offsetof(PipboyPrimitiveValue<bool>, value) == 0x18);
 
