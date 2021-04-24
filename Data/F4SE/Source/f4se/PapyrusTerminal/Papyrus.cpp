@@ -4,6 +4,8 @@
 #include "f4se/PapyrusNativeFunctions.h"
 #include "f4se/GameReferences.h"
 #include "f4se/GameExtraData.h"
+#include <Windows.h>
+#include <string>
 
 namespace Papyrus
 {
@@ -41,9 +43,14 @@ namespace Papyrus
 		}
 
 
+		// https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilea
+		// https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilea
+		// https://docs.microsoft.com/en-us/cpp/standard-library/directory-iterator-class
+		// https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-win32_find_dataa
+		// http://www.cs.rpi.edu/courses/fall01/os/WIN32_FIND_DATA.html <-----
 		BSFixedString GetDirectoryCurrent(StaticFunctionTag* base)
 		{
-			const char* value = "E:\\Bethesda\\steamapps\\common\\Fallout 4";
+			const char* value = Papyrus::GetCurrentDirectory();
 
 			_MESSAGE("PapyrusTerminal:KERNAL::GetDirectoryCurrent()");
 			_MESSAGE("+---kTypeID: '%i'", base->kTypeID);
@@ -56,6 +63,16 @@ namespace Papyrus
 
 	}
 }
+
+
+const char* Papyrus::GetCurrentDirectory()
+{
+	char buffer[MAX_PATH];
+	GetModuleFileNameA(NULL, buffer, MAX_PATH);
+	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+	return std::string(buffer).substr(0, pos).c_str();;
+}
+
 
 
 // XSE
@@ -76,3 +93,4 @@ bool Papyrus::RegisterFunctions(VirtualMachine* VM)
 
 	return true;
 }
+

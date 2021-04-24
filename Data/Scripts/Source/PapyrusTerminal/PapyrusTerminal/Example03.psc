@@ -5,9 +5,9 @@ ScriptName PapyrusTerminal:Example03 extends PapyrusTerminal:BIOS
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
 
 ; Menu Code
-string Code
-string CodeClientAsset = "PapyrusTerminal_CodeClient.swf" const
-string COMMAND_TYPE_LoadCompleteEvent = "PapyrusTerminal:Example03:TYPE_LoadCompleteEvent" const
+string OS
+string OS_Asset = "PapyrusTerminal_OS.swf" const
+string COMMAND_TYPE_LoadCompleteEvent = "PapyrusTerminal:COMMAND_TYPE_LoadCompleteEvent" const
 
 ; Command Index
 int CMD = 0 const
@@ -16,7 +16,6 @@ int CMD_ARG2 = 2 const
 int CMD_ARG3 = 3 const
 
 ; Command Name
-string COMMAND_HOME = "HOME" const
 string COMMAND_EXIT = "EXIT" const
 string COMMAND_VER = "VER" const
 string COMMAND_HELP = "HELP" const
@@ -43,23 +42,23 @@ EndProperty
 
 Event OnPapyrusTerminalInitialize(ObjectReference refTerminal)
 	Debug.TraceSelf(self, "OnPapyrusTerminalInitialize", "refTerminal:"+refTerminal)
-	PapyrusTerminal:Kernal.Test() ;@XSE
-	PapyrusTerminal:Kernal.Test2(true, true) ;@XSE
 EndEvent
 
 Event OnPapyrusTerminalReady()
 	Debug.TraceSelf(self, "OnPapyrusTerminalReady", "Ready")
 	PrintLine("The software is loading...")
-	RegisterForExternalEvent(COMMAND_TYPE_LoadCompleteEvent, "OnTYPE_LoadCompleteEvent")
-	UI.Load(TerminalHolotapeMenu, "root1", CodeClientAsset, self, "UILoadedCallback")
+
+	RegisterForExternalEvent(COMMAND_TYPE_LoadCompleteEvent, "TypeCallback")
+	UI.Load(TerminalHolotapeMenu, "root1", OS_Asset, self, "BootCallback")
 EndEvent
 
-Function UILoadedCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
-	Debug.TraceSelf(self, "UILoadedCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
-	Abort = false
-	Code = assetInstance
+Function BootCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
+	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
 
-	HOME() ; testing
+	Abort = false
+	OS = assetInstance
+	Setup()
+
 	ClearHome()
 	VER()
 	PrintLine("")
@@ -77,19 +76,14 @@ Function UILoadedCallback(bool success, string menuName, string menuRoot, string
 	End()
 EndFunction
 
-Function OnTYPE_LoadCompleteEvent(var[] lines)
-	Debug.TraceSelf(self, "OnTYPE_LoadCompleteEvent", "lines:"+lines)
+
+Function Setup()
+	var[] arguments = new var[1]
+	arguments[0] = PapyrusTerminal:KERNAL.GetDirectoryCurrent()
+	UI.Invoke(TerminalHolotapeMenu, OS+".HOME", arguments)
+	Debug.TraceSelf(self, "Setup", arguments)
 EndFunction
 
-; Async Terminal ReadLine operation completed.
-Event OnPapyrusTerminalReadAsyncCompleted(String readBuffer)
-	Debug.TraceSelf(self, "OnPapyrusTerminalReadAsyncCompleted", "readBuffer:"+readBuffer)
-EndEvent
-
-; Async Terminal ReadLine operation was cancelled
-Event OnPapyrusTerminalReadAsyncCancelled()
-	Debug.TraceSelf(self, "OnPapyrusTerminalReadAsyncCancelled", "cancelled")
-EndEvent
 
 Event OnPapyrusTerminalShutdown()
 	Debug.TraceSelf(self, "OnPapyrusTerminalShutdown", "Shutdown")
@@ -133,27 +127,19 @@ Function Interpret(string line)
 EndFunction
 
 
-Function HOME()
-	var[] arguments = new var[1]
-	arguments[0] = PapyrusTerminal:KERNAL.GetDirectoryCurrent()
-	UI.Invoke(TerminalHolotapeMenu, Code+".HOME", arguments)
-	Debug.TraceSelf(self, "HOME", arguments)
-EndFunction
-
-
 ; Commands
 ;---------------------------------------------
 
 ; Quits the CMD.EXE program (command interpreter) or the current batch script.
 Function EXIT(string[] command)
-	Debug.TraceSelf(self, "EXIT", "")
+	Debug.TraceSelf(self, "EXIT", command)
 	Abort = true
 EndFunction
 
 
 ; Displays the Windows version.
 Function VER(string[] command = none)
-	Debug.TraceSelf(self, "VER", "")
+	Debug.TraceSelf(self, "VER", command)
 	If (!command)
 		PrintLine("Microsoft Windows [Version 10.0.19041.867]")
 		PrintLine("(c) 2020 Microsoft Corporation. All rights reserved.")
@@ -165,14 +151,14 @@ EndFunction
 
 ; Clears the screen.
 Function CLS(string[] command)
-	Debug.TraceSelf(self, "CLS", "")
+	Debug.TraceSelf(self, "CLS", command)
 	ClearHome()
 EndFunction
 
 
 ; Displays the name of or changes the current directory.
 string Function CD(string[] command = none)
-	Debug.TraceSelf(self, "CD", "")
+	Debug.TraceSelf(self, "CD", command)
 	var[] arguments = new var[1]
 	arguments[0] = "."
 	If (command && command.Length >= 2)
@@ -180,7 +166,7 @@ string Function CD(string[] command = none)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	string value = UI.Invoke(TerminalHolotapeMenu, Code+".CD", arguments)
+	string value = UI.Invoke(TerminalHolotapeMenu, OS+".CD", arguments)
 
 	If (command)
 		PrintLine(value)
@@ -192,7 +178,7 @@ EndFunction
 
 ; Displays a list of files and subdirectories in a directory.
 Function DIR(string[] command)
-	Debug.TraceSelf(self, "DIR", "")
+	Debug.TraceSelf(self, "DIR", command)
 	var[] arguments = new var[1]
 	arguments[0] = "."
 	If (command && command.Length >= 2)
@@ -200,7 +186,7 @@ Function DIR(string[] command)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	var object = UI.Invoke(TerminalHolotapeMenu, Code+".DIR", arguments)
+	var object = UI.Invoke(TerminalHolotapeMenu, OS+".DIR", arguments)
 	string[] values = Utility.VarToVarArray(object) as string[]
 
 	int index = 0
@@ -213,7 +199,7 @@ EndFunction
 
 ; Prints a text file.
 Function TYPE(string[] command)
-	Debug.TraceSelf(self, "TYPE", "")
+	Debug.TraceSelf(self, "TYPE", command)
 	var[] arguments = new var[1]
 	; arguments[0] = "."
 
@@ -222,7 +208,7 @@ Function TYPE(string[] command)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	string object = UI.Invoke(TerminalHolotapeMenu, Code+".TYPE", arguments)
+	string object = UI.Invoke(TerminalHolotapeMenu, OS+".TYPE", arguments)
 	string[] values = Utility.VarToVarArray(object) as string[]
 
 	int index = 0
@@ -230,6 +216,10 @@ Function TYPE(string[] command)
 		PrintLine(values[index])
 		index += 1
 	EndWhile
+EndFunction
+
+Function TypeCallback(var[] lines)
+	Debug.TraceSelf(self, "TypeCallback", "lines:"+lines)
 EndFunction
 
 

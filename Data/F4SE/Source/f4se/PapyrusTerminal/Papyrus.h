@@ -6,4 +6,6 @@
 namespace Papyrus
 {
 	bool RegisterFunctions(VirtualMachine* VM);
+
+	const char* GetCurrentDirectory();
 }
