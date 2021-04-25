@@ -1,7 +1,7 @@
 #pragma once
 #include "f4se/PapyrusVM.h"
 
-#define SCRIPT_KERNAL "PapyrusTerminal:KERNAL"
+
 
 namespace Papyrus
 {

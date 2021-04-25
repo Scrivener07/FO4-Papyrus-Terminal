@@ -2,7 +2,7 @@
 #include "F4SE/ScaleformCallbacks.h"
 #include "f4se/GameMenus.h"
 
-#define PAPYRUS_TERMINAL_SWF "PapyrusTerminal.swf"
+#define COMPUTING_OS_SWF "Computer_OS.swf"
 
 namespace Scaleform
 {
@@ -10,14 +10,14 @@ namespace Scaleform
 }
 
 
-class PapyrusTerminal_WriteLog : public GFxFunctionHandler
+class Computing_WriteLog : public GFxFunctionHandler
 {
 	public:
 		virtual void Invoke(Args* args);
 };
 
 //
-//class PapyrusTerminal_GetDirectoryCurrent : public GFxFunctionHandler
+//class Computing_GetDirectoryCurrent : public GFxFunctionHandler
 //{
 //	public:
 //		virtual void Invoke(Args* args);

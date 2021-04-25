@@ -46,9 +46,9 @@ namespace Scaleform
 /// Exposes the XSE log tracing method to Scaleform.
 /// </summary>
 /// <param name="args">The arguments to use.</param>
-void PapyrusTerminal_WriteLog::Invoke(Args* args)
+void Computing_WriteLog::Invoke(Args* args)
 {
-	_MESSAGE("PapyrusTerminal_WriteLog()::Invoke");
+	_MESSAGE("Computing_WriteLog()::Invoke");
 	ASSERT(args->numArgs >= 1);
 	ASSERT(args->args[0].GetType() == GFxValue::kType_String);
 	_MESSAGE(args->args[0].GetString());
@@ -59,9 +59,9 @@ void PapyrusTerminal_WriteLog::Invoke(Args* args)
 ///// Gets the current directory.
 ///// </summary>
 ///// <param name="args">The arguments to use.</param>
-//void PapyrusTerminal_GetDirectoryCurrent::Invoke(Args* args)
+//void Computing_GetDirectoryCurrent::Invoke(Args* args)
 //{
-//	_MESSAGE("PapyrusTerminal_GetDirectoryCurrent()::Invoke, {E:\\Bethesda\\steamapps\\common\\Fallout 4}");
+//	_MESSAGE("Computing_GetDirectoryCurrent()::Invoke, {E:\\Bethesda\\steamapps\\common\\Fallout 4}");
 //
 //	//GFxValue object;
 //	//Scaleform::RegisterUnmanagedString(&object, "CurrentDirectory", "Scrivener");
@@ -91,17 +91,17 @@ bool Scaleform::RegisterFunctions(GFxMovieView* view, GFxValue* F4SERoot)
 			_MESSAGE("Scaleform::RegisterFunctions(): Checking: '%s'", sResult);
 
 			// Check the resulting file path for the papyrus terminal swf.
-			if (sResult.find(PAPYRUS_TERMINAL_SWF) != std::string::npos)
+			if (sResult.find(COMPUTING_OS_SWF) != std::string::npos)
 			{
 				_MESSAGE("Scaleform::RegisterFunctions(): Using: '%s'", sResult);
 
-				RegisterFunction<PapyrusTerminal_WriteLog>(F4SERoot, view->movieRoot, "WriteLog");
+				RegisterFunction<Computing_WriteLog>(F4SERoot, view->movieRoot, "WriteLog");
 
-				//RegisterFunction<PapyrusTerminal_GetDirectoryCurrent>(F4SERoot, view->movieRoot, "GetDirectoryCurrent");
+				//RegisterFunction<Computing_GetDirectoryCurrent>(F4SERoot, view->movieRoot, "GetDirectoryCurrent");
 			}
 			else
 			{
-				_MESSAGE("Scaleform::RegisterFunctions(): The movie url does not match '%s'.", PAPYRUS_TERMINAL_SWF);
+				_MESSAGE("Scaleform::RegisterFunctions(): The movie url does not match '%s'.", COMPUTING_OS_SWF);
 			}
 		}
 		else

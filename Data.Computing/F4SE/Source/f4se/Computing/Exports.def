@@ -1,4 +1,4 @@
-LIBRARY	"PapyrusTerminal"
+LIBRARY	"Computing"
 EXPORTS
 F4SEPlugin_Query
 F4SEPlugin_Load

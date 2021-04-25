@@ -102,7 +102,7 @@ extern "C"
 			_MESSAGE("Main::F4SEPlugin_Load(): Registered Papyrus");
 		}
 
-		if (g_scaleform->Register("Kernal", Scaleform::RegisterFunctions))
+		if (g_scaleform->Register("Computer", Scaleform::RegisterFunctions))
 		{
 			_MESSAGE("Main::F4SEPlugin_Load(): Registered Scaleform");
 		}
