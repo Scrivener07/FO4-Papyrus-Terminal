@@ -29,17 +29,19 @@ string readAsyncBuffer = ""
 ; gets set to true upon receiving OnTerminalShutdown event.
 bool isShuttingDown = false
 
-
+Function Foo(var d = none)
+	; code
+EndFunction
 
 ; Lifecycle management
 
-Event OnInit()	
+Event OnInit()
 	Debug.Trace(Self + ": DEBUG - Papyrus Terminal holotape initialized.")
 EndEvent
 
 Event OnHolotapePlay(ObjectReference refTerminal)
-	Debug.Trace(Self + ": DEBUG - OnHolotapePlay event recevied.")	
-	
+	Debug.Trace(Self + ": DEBUG - OnHolotapePlay event recevied.")
+
 	; initialize internal vars
 	readMode = READMODE_NONE
 	readSyncCompleteFlag = false;
@@ -54,7 +56,7 @@ Event OnHolotapePlay(ObjectReference refTerminal)
 	OnPapyrusTerminalInitialize(refTerminal)
 EndEvent
 
-Function OnTerminalReady()	
+Function OnTerminalReady()
 	Debug.Trace(Self + ": DEBUG - OnTerminalReady event received.")
 
 	; unregister OnTerminalReady events
@@ -64,27 +66,27 @@ Function OnTerminalReady()
 	OnPapyrusTerminalReady()
 EndFunction
 
-Function OnTerminalShutdown()	
-	Debug.Trace(Self + ": DEBUG - OnTerminalShutdown event received.")	
-	
+Function OnTerminalShutdown()
+	Debug.Trace(Self + ": DEBUG - OnTerminalShutdown event received.")
+
 	; unregister for all events
 	UnregisterForAllEvents()
 
 	; set shutdown flag
 	isShuttingDown = true
-	
+
 	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)
 		readSyncCompleteFlag = false
-	
+
 	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; send async read cancel to derived class
 		OnPapyrusTerminalReadAsyncCancelled()
-	
+
 	EndIf
-	
+
 	; clear readmode
 	readMode = READMODE_NONE
-	
+
 	; notify derived class that terminal has shut down
 	OnPapyrusTerminalShutdown()
 EndFunction
@@ -198,7 +200,7 @@ Bool Property ReverseMode Hidden
 		Else
 			return false
 		EndIf
-	EndFunction	
+	EndFunction
 EndProperty
 
 ; Enable/disable insert mode (insert key toggle)
@@ -265,7 +267,7 @@ EndFunction
 
 ; Move the cursor by character index (zero based "screen memory" address, top left is 0)
 Function CursorMoveByIndex(Int index)
-	If (isShuttingDown)		
+	If (isShuttingDown)
 		Var[] args = new Var[1]
 		args[0] = index
 		UI.Invoke(FLASH_MENUNAME, "root1.CursorMoveByIndex", args)
@@ -311,7 +313,7 @@ Bool Property CursorEnabled Hidden
 		If (!isShuttingDown)
 			UI.Set(FLASH_MENUNAME, "root1.CursorEnabled", value)
 		EndIf
-	EndFunction	
+	EndFunction
 	Bool Function Get()
 		If (!isShuttingDown)
 			return UI.Get(FLASH_MENUNAME, "root1.CursorEnabled") as Bool
@@ -333,18 +335,18 @@ Bool Function ReadLineAsyncBegin(Int maxLength = 0)
 
 		; set async readline mode
 		readMode = READMODE_LINE_ASYN
-		
+
 		; clear async read buffer
 		readAsyncBuffer = ""
 
 		; register for terminal async read result and cancel events
-		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult")		
+		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult")
 
 		; invoke async ReadLine on Terminal
 		Var[] args = new Var[1]
 		args[0] = maxLength
 		return UI.Invoke(FLASH_MENUNAME, "root1.ReadLineAsyncBeginPapyrus", args) as Bool
-	
+
 	Else
 		; read operation in progress
 		Debug.Trace(Self + ": ERROR - ReadLineAsyncBegin() called, but a Read operation is already in progress.")
@@ -374,7 +376,7 @@ Bool Function ReadKeyAsyncBegin()
 		Var[] args = new Var[1]
 		args[0] = ""
 		return UI.Invoke(FLASH_MENUNAME, "root1.ReadKeyAsyncBegin", args) as Bool
-	
+
 	Else
 		; read operation in progress
 		Debug.Trace(Self + ": ERROR - ReadKeyAsyncBegin() called, but a Read operation is already in progres.")
@@ -389,10 +391,10 @@ Function ReadAsyncCancel()
 		return
 	EndIf
 
-	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)		
+	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; unregister for terminal async read result event
 		UnRegisterForExternalEvent(ReadAsyncResultEvent)
-		
+
 		; register for terminal async read cancelled event
 		RegisterForExternalEvent(ReadAsyncCancelledEvent, "OnReadAsyncCancelled")
 
@@ -421,30 +423,30 @@ String Function ReadLine(Int maxLength = 0)
 		; clear readAsync input buffer and sync read complete flag
 		readSyncCompleteFlag = false
 		readAsyncBuffer = ""
-		
+
 		; register for async result event
 		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult");
 
 		; invoke ReadLineAsync on Terminal
 		Var[] args = new Var[1]
 		args[0] = maxLength
-		UI.Invoke(FLASH_MENUNAME, "root1.ReadLineAsyncBeginPapyrus", args)	
+		UI.Invoke(FLASH_MENUNAME, "root1.ReadLineAsyncBeginPapyrus", args)
 
 		; wait for async result
 		While (IsBoundGameObjectAvailable() &&  readMode == READMODE_LINE_SYNC && !readSyncCompleteFlag && !isShuttingDown)
-			;Debug.Trace(Self + ": DEBUG - [ReadLine] Waiting for OnReadAsyncResult")	
-		
+			;Debug.Trace(Self + ": DEBUG - [ReadLine] Waiting for OnReadAsyncResult")
+
 			; WARNING: DO NOT use Utility.Wait() in your Papyrus Terminal scripts!
 			; Doing so will suspend execution of your script, because the Terminal Menu is open.
 			; Use Utility.WaitMenuMode() instead.
-			
+
 			Utility.WaitMenuMode(SYNCREAD_WAIT_INTERVAL)
 		EndWhile
 
 		; return async input buffer contents
 		return readAsyncBuffer
 	Else
-		Debug.Trace(Self + ": ERROR - ReadLine() called, but a Read operation is already in progress.")		
+		Debug.Trace(Self + ": ERROR - ReadLine() called, but a Read operation is already in progress.")
 		return ""
 	EndIf
 EndFunction
@@ -460,7 +462,7 @@ String Function ReadKey()
 		; clear readAsync input buffer and sync read complete flag
 		readSyncCompleteFlag = false
 		readAsyncBuffer = ""
-		
+
 		; register for async result event
 		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult");
 
@@ -471,12 +473,12 @@ String Function ReadKey()
 		If (readAsyncBeginResult)
 			; wait for read async result
 			While (IsBoundGameObjectAvailable() &&  readMode == READMODE_KEY_SYNC && !readSyncCompleteFlag && !isShuttingDown)
-				;Debug.Trace(Self + ": DEBUG - [ReadKey] Waiting for OnReadAsyncResult")	
-			
+				;Debug.Trace(Self + ": DEBUG - [ReadKey] Waiting for OnReadAsyncResult")
+
 				; WARNING: DO NOT use Utility.Wait() in your Papyrus Terminal scripts!
 				; Doing so will suspend execution of your script, because the Terminal Menu is open.
 				; Use Utility.WaitMenuMode() instead.
-				
+
 				Utility.WaitMenuMode(SYNCREAD_WAIT_INTERVAL)
 			EndWhile
 
@@ -490,10 +492,10 @@ String Function ReadKey()
 		Else
 			Debug.Trace(Self + ": ERROR - ReadKeyAsyncBegin call failed.")
 			return ""
-		EndIf	
+		EndIf
 	Else
-		Debug.Trace(Self + ": ERROR - ReadKey() called, but a Read operation is already in progress.")		
-		return ""		
+		Debug.Trace(Self + ": ERROR - ReadKey() called, but a Read operation is already in progress.")
+		return ""
 	EndIf
 EndFunction
 
@@ -501,19 +503,19 @@ EndFunction
 ; The Fash Terminal itself can only do async Reads, but the API provides synchronous wrappers ReadKey() and ReadLine()
 Function OnReadAsyncResult(string readLineBuffer)
 	Debug.Trace(Self + ": DEBUG - OnReadAsyncResult event received.") ;" readLineBuffer=" + readLineBuffer)
-	
-	; unregister for async result event
-	UnRegisterForExternalEvent(ReadAsyncResultEvent)	
 
-	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)		
+	; unregister for async result event
+	UnRegisterForExternalEvent(ReadAsyncResultEvent)
+
+	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)
 		; synchronous Read operation has completed, fill async read buffer from event parameter
 		readAsyncBuffer = readLineBuffer
  		; set sync read complete flag
 		readSyncCompleteFlag = true
-		; clear readmode		
+		; clear readmode
 		readMode = READMODE_NONE
 
-	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN) 		
+	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; asynchronous Read operation has completed, signal derived class
 		OnPapyrusTerminalReadAsyncCompleted(readLineBuffer)
 		; reset readmode
@@ -521,20 +523,20 @@ Function OnReadAsyncResult(string readLineBuffer)
 
 	Else
 		Debug.Trace(Self + ": WARNING - OnReadAsyncResult event received, but no Read operation was in progress.");
-	EndIf	
+	EndIf
 EndFunction
 
 ; Result event handler for async Read cancellation
 Function OnReadAsyncCancelled()
-	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)		
+	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; unregister for async result and cancelled events
 		UnRegisterForExternalEvent(ReadAsyncResultEvent)
 		UnRegisterForExternalEvent(ReadAsyncCancelledEvent)
-		
+
 		; clear async read mode
 		readMode = READMODE_NONE
-		
-		; notify derived class 
+
+		; notify derived class
 		OnPapyrusTerminalReadAsyncCancelled()
 	EndIf
 EndFunction
@@ -543,8 +545,8 @@ EndFunction
 
 ; String Utility Functions
 String[] Function StringSplit(string line, string separator = " ")
-	If (isShuttingDown) 
-		string[] retVal = new string[0] 
+	If (isShuttingDown)
+		string[] retVal = new string[0]
 		return retVal
 	EndIf
 
@@ -573,7 +575,7 @@ Int Function StringCharCodeAt(String line, Int charIndex)
 	Var[] args = new Var[2]
 	args[0] = line
 	args[1] = charIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringCharCodeAtPapyrus", args) as Int	
+	Return UI.Invoke(FLASH_MENUNAME, "root1.StringCharCodeAtPapyrus", args) as Int
 EndFunction
 
 Int Function StringIndexOf(String line, String part, Int startIndex)
@@ -585,7 +587,7 @@ Int Function StringIndexOf(String line, String part, Int startIndex)
 	args[0] = line
 	args[1] = part
 	args[2] = startIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringIndexOfPapyrus", args) as Int		
+	Return UI.Invoke(FLASH_MENUNAME, "root1.StringIndexOfPapyrus", args) as Int
 EndFunction
 
 Int Function StringLastIndexOf(String line, String part, Int startIndex)
@@ -597,7 +599,7 @@ Int Function StringLastIndexOf(String line, String part, Int startIndex)
 	args[0] = line
 	args[1] = part
 	args[2] = startIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringLastIndexOfPapyrus", args) as Int		
+	Return UI.Invoke(FLASH_MENUNAME, "root1.StringLastIndexOfPapyrus", args) as Int
 EndFunction
 
 String Function StringReplace(String line, String pattern, String replacement)

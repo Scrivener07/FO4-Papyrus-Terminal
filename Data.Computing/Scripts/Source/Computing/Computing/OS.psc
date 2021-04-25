@@ -1,11 +1,11 @@
-ScriptName PapyrusTerminal:Example03 extends PapyrusTerminal:BIOS
+ScriptName Computing:OS extends PapyrusTerminal:BIOS
 {The MS Command Line Interface}
 
 ; Menu Base
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
 
 ; Menu Code
-string OS
+string OS_Instance
 string OS_Asset = "PapyrusTerminal_OS.swf" const
 string COMMAND_TYPE_LoadCompleteEvent = "PapyrusTerminal:COMMAND_TYPE_LoadCompleteEvent" const
 
@@ -56,7 +56,7 @@ Function BootCallback(bool success, string menuName, string menuRoot, string ass
 	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
 
 	Abort = false
-	OS = assetInstance
+	OS_Instance = assetInstance
 	Setup()
 
 	ClearHome()
@@ -80,7 +80,7 @@ EndFunction
 Function Setup()
 	var[] arguments = new var[1]
 	arguments[0] = PapyrusTerminal:KERNAL.GetDirectoryCurrent()
-	UI.Invoke(TerminalHolotapeMenu, OS+".HOME", arguments)
+	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".HOME", arguments)
 	Debug.TraceSelf(self, "Setup", arguments)
 EndFunction
 
@@ -166,7 +166,7 @@ string Function CD(string[] command = none)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	string value = UI.Invoke(TerminalHolotapeMenu, OS+".CD", arguments)
+	string value = UI.Invoke(TerminalHolotapeMenu, OS_Instance+".CD", arguments)
 
 	If (command)
 		PrintLine(value)
@@ -186,7 +186,7 @@ Function DIR(string[] command)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	var object = UI.Invoke(TerminalHolotapeMenu, OS+".DIR", arguments)
+	var object = UI.Invoke(TerminalHolotapeMenu, OS_Instance+".DIR", arguments)
 	string[] values = Utility.VarToVarArray(object) as string[]
 
 	int index = 0
@@ -208,7 +208,7 @@ Function TYPE(string[] command)
 		arguments[0] = command[CMD_ARG1]
 	EndIf
 
-	string object = UI.Invoke(TerminalHolotapeMenu, OS+".TYPE", arguments)
+	string object = UI.Invoke(TerminalHolotapeMenu, OS_Instance+".TYPE", arguments)
 	string[] values = Utility.VarToVarArray(object) as string[]
 
 	int index = 0
