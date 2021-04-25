@@ -79,7 +79,7 @@ EndFunction
 
 Function Setup()
 	var[] arguments = new var[1]
-	arguments[0] = PapyrusTerminal:KERNAL.GetDirectoryCurrent()
+	arguments[0] = Computing:XSE.GetDirectoryCurrent()
 	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".HOME", arguments)
 	Debug.TraceSelf(self, "Setup", arguments)
 EndFunction
