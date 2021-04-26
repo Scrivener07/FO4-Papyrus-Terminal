@@ -1,4 +1,4 @@
-package Computer
+package Computing
 {
 	import System.Diagnostics.Debug;
 	import System.Diagnostics.Utility;
@@ -158,11 +158,6 @@ package Computer
 
 					index += 1;
 				}
-
-
-
-
-
 			}
 			else
 			{

@@ -1,17 +1,17 @@
 ﻿package
 {
-	import Computer.SystemDrive;
-	import PapyrusTerminal;
-	import System.Diagnostics.Debug;
-	import System.Diagnostics.Utility;
-	import System.Display;
-	import F4SE.XSE;
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.events.*;
+	import F4SE.XSE;
+	import System.Diagnostics.Debug;
+	import System.Diagnostics.Utility;
+	import System.Display;
+	import PapyrusTerminal;
+	import Computing.SystemDrive;
 
 	public class OS extends MovieClip
 	{
@@ -19,7 +19,7 @@
 		private var MenuRoot:PapyrusTerminal;
 
 		// External Events
-		private const COMMAND_TYPE_LoadCompleteEvent:String = "PapyrusTerminal:COMMAND_TYPE_LoadCompleteEvent";
+		private const COMMAND_TYPE_LoadCompleteEvent:String = "Computing:COMMAND_TYPE_LoadCompleteEvent";
 
 		// OS Components
 		private var Drive:SystemDrive;
@@ -30,7 +30,7 @@
 
 		public function OS()
 		{
-			Debug.Prefix = "PapyrusTerminal";
+			Debug.Prefix = "Computing";
 			Debug.WriteLine("[OS]", "(CTOR)");
 			Drive = new SystemDrive();
 			addEventListener(Event.ADDED_TO_STAGE, this.OnAddedToStage);
@@ -56,7 +56,7 @@
 		// Commands
 		//---------------------------------------------
 
-		public function HOME(directory:String):void
+		public function DriveRoot(directory:String):void
 		{
 			Debug.WriteLine("[OS]", "(Root)", "directory: '"+directory+"'");
 			Drive.Root(directory);
@@ -159,7 +159,7 @@
 			Debug.WriteLine("[OS]", "(Test_Kernal_WriteLog)");
 			try
 			{
-				XSE.API.plugins.Kernal.WriteLog("@AS3: Test_Kernal_WriteLog");
+				XSE.API.plugins.Computer.WriteLog("@AS3: Test_Kernal_WriteLog");
 			}
 			catch (error:Error)
 			{

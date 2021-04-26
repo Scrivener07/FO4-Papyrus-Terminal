@@ -1,17 +1,17 @@
-﻿PapyrusTerminal_OS.swf Movie Report
--------------------------------------
+﻿Computer_OS.swf Movie Report
+------------------------------
 
 Frame #    Frame Bytes    Total Bytes    Scene
 -------    -----------    -----------    -----
-      1          23369          23369    Scene 1 (AS 3.0 Classes Export Frame)
+      1            393            393    Scene 1 (AS 3.0 Classes Export Frame)
 
 Scene      Shape Bytes    Text Bytes    ActionScript Bytes
 -------    -----------    ----------    ------------------
-Scene 1              0             0                 23321
+Scene 1              0             0                   312
 
 ActionScript Bytes    Location
 ------------------    --------
-             23321    Scene 1:Frame 1
+               312    Scene 1:Frame 1
 
 
 

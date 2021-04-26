@@ -1,13 +1,13 @@
-ScriptName Computing:OS extends PapyrusTerminal:BIOS
-{The MS Command Line Interface}
+ScriptName Computer:OS:BIOS extends PapyrusTerminal:BIOS
+
 
 ; Menu Base
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
 
 ; Menu Code
 string OS_Instance
-string OS_Asset = "PapyrusTerminal_OS.swf" const
-string COMMAND_TYPE_LoadCompleteEvent = "PapyrusTerminal:COMMAND_TYPE_LoadCompleteEvent" const
+string OS_Asset = "Computer_OS.swf" const
+string COMMAND_TYPE_LoadCompleteEvent = "Computer:COMMAND_TYPE_LoadCompleteEvent" const
 
 ; Command Index
 int CMD = 0 const
@@ -27,41 +27,36 @@ string COMMAND_TREE = "TREE" const
 string COMMAND_DATE = "DATE" const
 string COMMAND_TIME = "TIME" const
 
+
 ; Processing
 bool Abort = false
 bool Property Processing Hidden
 	{Represents the abort condition for the command processor.}
 	bool Function Get()
-		return IsBoundGameObjectAvailable() && !Abort
+		return !Abort && IsBoundGameObjectAvailable()
 	EndFunction
 EndProperty
 
 
-; Terminal
+; BIOS
 ;---------------------------------------------
 
 Event OnPapyrusTerminalInitialize(ObjectReference refTerminal)
 	Debug.TraceSelf(self, "OnPapyrusTerminalInitialize", "refTerminal:"+refTerminal)
+	RegisterForExternalEvent(COMMAND_TYPE_LoadCompleteEvent, "TypeCallback")
 EndEvent
+
 
 Event OnPapyrusTerminalReady()
 	Debug.TraceSelf(self, "OnPapyrusTerminalReady", "Ready")
-	PrintLine("The software is loading...")
 
-	RegisterForExternalEvent(COMMAND_TYPE_LoadCompleteEvent, "TypeCallback")
+	PrintLine("The shell is starting...")
 	UI.Load(TerminalHolotapeMenu, "root1", OS_Asset, self, "BootCallback")
-EndEvent
-
-Function BootCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
-	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
-
-	Abort = false
-	OS_Instance = assetInstance
-	Setup()
 
 	ClearHome()
 	VER()
 	PrintLine("")
+
 	While (Processing)
 		Print(CD() + "> ")
 		CursorEnabled = true
@@ -74,21 +69,25 @@ Function BootCallback(bool success, string menuName, string menuRoot, string ass
 
 	; terminate
 	End()
-EndFunction
+EndEvent
 
 
-Function Setup()
+Function BootCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
+	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
+	Abort = false
+	OS_Instance = assetInstance
 	var[] arguments = new var[1]
-	arguments[0] = Computing:XSE.GetDirectoryCurrent()
-	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".HOME", arguments)
-	Debug.TraceSelf(self, "Setup", arguments)
+	arguments[0] = Computer:Drive:IO.GetDirectoryCurrent()
+	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".DriveRoot", arguments)
+	Debug.TraceSelf(self, "BootCallback", arguments)
 EndFunction
 
 
 Event OnPapyrusTerminalShutdown()
 	Debug.TraceSelf(self, "OnPapyrusTerminalShutdown", "Shutdown")
-	Abort = true
+	Abort = false
 EndEvent
+
 
 
 ; CMD
