@@ -25,8 +25,6 @@ Event OnPapyrusTerminalReady()
     ; reprint name that was entered and show notice to quit
     PrintLine("HELLO " + readName + "!")
     PrintLine("Press TAB or CTRL-C, or any other key to quit this program.")    
-    string[] test = StringSplit("blah blah blah")
-    ;string full = test[0] + ":" + test[1] + ":" + test[2]
     ; synchronous ReadKey() call reads a single character/keypress from the keyboard
     String keyPress = ReadKey()        
     ; end terminal session (close terminal)
@@ -35,5 +33,8 @@ EndEvent
 
 Event OnPapyrusTerminalShutdown()
     ; if you get this event, the terminal has shut down (user left holotape with tab, ctrl-c or by some other means)
-    ; your script should perform any necessary clean-up duty upon receiving this event, so that it may terminate properly.
+    ; your script should unregister for all events and perform any necessary clean-up duty upon receiving this event,
+    ; so that it may terminate properly.
+    ; NOTE: The Terminal is already gone when this event occurs.
+    ; DO NOT interact with the terminal in this event handler, or suffer a CTD!
 EndEvent
