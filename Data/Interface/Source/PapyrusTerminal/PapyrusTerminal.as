@@ -29,6 +29,8 @@
 	import flash.text.Font;
 	import flash.text.engine.Kerning;
 	
+	import printf;
+	
 	// scaleform extensions
 	import scaleform.gfx.Extensions;
 
@@ -53,6 +55,7 @@
 		private const cfgConsoleFontName:String = "Share-TechMono";		// Share-TechMono is the vanilla console font available in the game
 		
 		// Terminal events
+		private const PipboyPlayEvent:String = "PapyrusTerminal:PipboyPlayEvent";
 		private const TerminalReadyEvent:String = "PapyrusTerminal:ReadyEvent";
 		private const TerminalShutdownEvent:String = "PapyrusTerminal:ShutdownEvent";
 		private const ReadAsyncCancelledEvent:String  = "PapyrusTerminal:ReadAsyncCancelledEvent";
@@ -106,9 +109,9 @@
 		private var bCursorEnabled:Boolean = true;
 		
 		// async read related
-		private const READASYNCMODE_NONE = 0;
-		private const READASYNCMODE_LINE = 1;
-		private const READASYNCMODE_KEY = 2;		
+		public const READASYNCMODE_NONE = 0;
+		public const READASYNCMODE_LINE = 1;
+		public const READASYNCMODE_KEY = 2;		
 		private var iReadAsyncMode:int = 0;					// default to none
 		private var iReadStartIndex:int = -1;				// index is zero based, -1 = not defined
 		private var iReadMaxLength:int = 0;					// 0 = unlimited
@@ -147,10 +150,13 @@
 
 		private function dispose(param1:Event) : void
 		{
+			removeEventListener(TimerEvent.TIMER, this.dispose);
 			removeEventListener(FO4.Keyboard.InputEvent.KEY_DOWN, this.procKeyDown);
-			removeEventListener(FO4.Keyboard.InputEvent.TEXT_INPUT, this.procTextInput);
+			removeEventListener(FO4.Keyboard.InputEvent.FILTERED_KEY_DOWN, this.procTextInput);
+			removeEventListener(FO4.Keyboard.InputEvent.TEXT_INPUT, this.procTextInput);			
 			removeEventListener(Event.ADDED_TO_STAGE, this.init);
 			removeEventListener(Event.REMOVED_FROM_STAGE, this.dispose);
+			
 		}
 
 		public function InitProgram() : void
@@ -164,15 +170,17 @@
 			//var instance:String = System.Display.GetInstance(this);
 			//trace("My instance: " + instance);
 
-			// set up the screen
-			SetupScreen("72x24");
-
 			// show boot logo
 			var bootScreenImage:BitmapData = new BootScreenLogo();
 			bootScreen = new Bitmap();
 			bootScreen.bitmapData = bootScreenImage;
 			this.addChild(bootScreen);
+
+			// set up the screen
+			SetupScreen("72x24");
 			
+			F4SE.SendExternalEvent(PipboyPlayEvent)
+
 			// boot process timer (mainly here to keep the bootscreen visible long enough for player to see it)
 			bootLogoTimer = new Timer(1400, 1);
 			bootLogoTimer.addEventListener(TimerEvent.TIMER, this.BootComplete);
@@ -222,8 +230,7 @@
 			// turn off cursor
 			CursorEnabled = false;			
 						
-			// calculate number of lines and elements / line		
-			// TODO: obtain these numbers from the actual document settings
+			// calculate number of lines and elements / lines
 			var charElementHeight:Number = 700 / cfgTerminalLines;
 			var charElementWidth:Number = 826 / cfgTerminalColumns;
 
@@ -274,11 +281,13 @@
 					//newCharElement.autoSize = flash.text.TextFieldAutoSize.LEFT; 
 					newCharElement.name = "CharElement_" + curLine + "_" + curColumn;
 					//trace("Element X=" + newCharElement.x + ", Y=" + newCharElement.y)
+					// add new element to array
 					aScreenMemory.push(newCharElement);
-					this.addChild(newCharElement);					
+					// add new element to stage
+					this.addChild(newCharElement);
 				}
 			}			
-			//Utility.TraceDisplayList(this);				
+			//Utility.TraceDisplayList(this);		
 			
 			// move cursor to home position
 			this.removeChild(mcCursor);
@@ -291,6 +300,15 @@
 			//this.removeChild(bootScreen);
 		}	
 		
+		private function ResetScreen()
+		{
+			var i:int = 0
+			for (i = 0; i <= aScreenMemory.length; i++)
+			{
+				this.removeChild(aScreenMemory[i])
+			}
+		}
+		
 		private function BootComplete(e:TimerEvent) : void
 		{			
 			this.removeChild(bootScreen);			
@@ -298,7 +316,9 @@
 			// Inform Papyrus that the terminal is ready
 			if (F4SE)
 			{
-				F4SE.SendExternalEvent(TerminalReadyEvent);
+				SendHolotapeChatter(0, "BootComplete");
+				
+				F4SE.SendExternalEvent(TerminalReadyEvent);				
 				trace("Papyrus notified.");
 			}
 			else
@@ -358,6 +378,15 @@
 				}							
 			}
 		}
+		
+		public function PrintFieldPapyrus(argument:Object, ...rest) : void
+		{			
+			if (argument != null && rest[0] != null && rest[1] != null && rest[2] != null && rest[3] != null)
+			{
+				trace("PrintFieldPapyrus");
+				PrintField(argument.toString(), int(rest[0]), int(rest[1]), rest[2].toString(), Boolean(rest[3]));
+			}
+		}
 			
 		public function ClearScreenPapyrus(argument1:Object, ...rest) : void
 		{
@@ -407,9 +436,65 @@
 				
 		public function PrintLine(textToPrint:String)
 		{
-			Print(textToPrint + "\n");
+			// do not append line feed if end of string coincides with last column (will auto line feed)
+			if ((iCursorPositionColumn + textToPrint.length) == TerminalColumns)
+			{
+				Print(textToPrint);
+			}
+			else
+			{
+				Print(textToPrint + "\n");
+			}				
 		}
-				
+		
+		public function PrintField(textToPrint:String, fieldSize:int, alignmentType:int, paddingChar:String = " ", noElipsis:Boolean = false)
+		{
+			// truncate if too long
+			if (textToPrint.length > fieldSize)
+			{
+				if (noElipsis || fieldSize < 3)
+				{
+					textToPrint = textToPrint.substr(0, fieldSize);	
+				}
+				else
+				{
+					// leave room for elipsis
+					textToPrint = textToPrint.substr(0, fieldSize - 3);
+					// add elipsis
+					textToPrint += "..."					
+				}
+			}
+			
+			if (textToPrint.length < fieldSize)
+			{
+				var padLen:int = fieldSize - textToPrint.length;
+				switch (alignmentType)
+				{
+					case 0:						
+						// left align, pad to the right
+						textToPrint = textToPrint + StringRepeat(paddingChar, padLen);
+						break;
+					
+					case 1: 						
+						// center align
+						padLen = Math.floor(padLen / 2)
+						textToPrint = StringRepeat(paddingChar, padLen) + textToPrint + StringRepeat(paddingChar, padLen);
+						if ((padLen *  2) < fieldSize)
+						{
+							textToPrint += " "
+						}
+						break;
+						
+					case 2:						
+						// right align
+						textToPrint = StringRepeat(paddingChar, padLen) + textToPrint
+						break;
+				}
+			}
+			
+			Print(textToPrint)
+		}
+						
 		public function Print(textToPrint:String)
 		{
 			// ditch papyrus string escape sequence
@@ -567,7 +652,8 @@
 			}
 		}*/
 		
-		private function GetNextOccupiedCharElement(startIndex:int) : int
+		// not used
+/*		private function GetNextOccupiedCharElement(startIndex:int) : int
 		{
 			var i:int;
 			for (i = startIndex; i < (cfgTerminalLines * cfgTerminalColumns - 1); i++)
@@ -579,7 +665,7 @@
 					
 			}
 			return -1;
-		}
+		}*/
 		
 		
 		public function ClearScreen(homeCursor:Boolean)
@@ -1182,7 +1268,7 @@
       	public function Pause(param1:Boolean) : void
       	{
         	var _loc2_:String = !!param1 ? "Paused" : "Resumed";
-         	trace("PapyrusTerminal: DEBUG - Game " + " has been " + _loc2_ + "!");
+         	trace("PapyrusTerminal: DEBUG - Game has been " + _loc2_ + "!");
       	}
 		
         public function ConfirmQuit(forceQuit:Boolean = false) : void		
@@ -1200,7 +1286,7 @@
 					trace("PapyrusTerminal: ERROR - F4SE object unavailable; Unable to send shutdown notification to Papyrus.");
 				}
 				
-				Sleep(300);
+				Sleep(1000);
 				
 				// clear temporary input layers enable
 				BGSExternalInterface.call(this.BGSCodeObj, "executeCommand", "rfepc");
@@ -1213,7 +1299,7 @@
 			}
 	    }		
 				
-/*		private function SendHolotapeChatter(numParam:int, stringParam:String)
+		private function SendHolotapeChatter(numParam:int, stringParam:String)
 		{
 			// does not seem to work at all
 			if (BGSCodeObj)
@@ -1226,7 +1312,7 @@
 				trace("PapyrusTerminal: ERROR - Failed to send holotape chatter: BGSCodeObj unavailable.")
 			}			
 		}		
-*/		
+		
 		
 		
 		// helper functions
@@ -1355,6 +1441,16 @@
 			return contents;
 		}
 		
+		private function WriteScreenMemory(startIndex:int, charsToWrite:String) : void
+		{
+			var contents:Array = charsToWrite.split("");
+			var i:int = 0;
+			for (i = startIndex; i < contents.length; i++)
+			{
+				aScreenMemory[i].text = contents[i];
+			}
+		}
+		
 		private function WriteChars(charToWrite:String, startPos:int, repetitions:int)
 		{
 			var i:int;
@@ -1382,10 +1478,20 @@
 		}		
 		
 
-
+		// convenience functions
+		public function StringRepeat(sequenceToRepeat:String, numberOfRepetitions:int)
+		{	
+			var retVal:String = ""
+			var i:int
+			for (i = 0; i < numberOfRepetitions; i++)
+			{
+				retVal += sequenceToRepeat;
+			}
+			return retVal
+		}
 
 		
-		// string utility functions
+		// string utility functions / wrappers directly callable by papyrus				
 		public function StringSplitPapyrus(param1:Object, ...rest) : Array
 		{
 			var line:String = "";
@@ -1492,6 +1598,7 @@
 
 		public function StringLastIndexOfPapyrus(param1:Object, ...rest) : int
 		{
+			trace("StringLastIndexOfPapyrus");
 			var inString:String = "";
 			var subString:String = "";
 			var startIndex:int = 0x7FFFFFFF;
@@ -1499,19 +1606,28 @@
 			{
 				inString = String(param1);
 				inString = inString.replace(sPapyrusStringEscapeSequence, "");
+				trace("StringLastIndexOfPapyrus-inString=" + inString);
 				
 				if (rest[0] != null)
 				{
 					subString = String(rest[0]);
 					subString = subString.replace(sPapyrusStringEscapeSequence, "");					
+					trace("StringLastIndexOfPapyrus-subString=" + subString); 
 				}
 				
 				if (rest[1] != null)
 				{
 					startIndex = int(rest[1]);
+					if (startIndex == -1)
+					{
+						startIndex = inString.length - 1;
+					}
+					trace("StringLastIndexOfPapyrus-startIndex=" + startIndex);
 				}
 				
-				return int(inString.lastIndexOf(subString, startIndex));
+				var retVal:int = inString.lastIndexOf(subString, startIndex);				
+				trace("StringLastIndexOfPapyurs-retVal=" + retVal);
+				return retVal;
 			}
 			
 			return -1;			
@@ -1593,6 +1709,80 @@
 			}
 			
 			return "";			
+		}
+		
+		public function StringIsNumericPapyrus(param1:Object, ...rest) : Boolean
+		{
+			var inString:String = "";
+			if (param1 != null)
+			{				
+				inString = String(param1);
+				inString = inString.replace(sPapyrusStringEscapeSequence, "");
+				
+				if (inString == "")
+				{
+					return false;
+				}
+				
+				return (!isNaN(Number(inString)));
+			}
+			
+			return false;
+		}
+		
+		public function StringLengthPapyrus(param1:Object, ...rest) : int
+		{
+			var inString:String = "";
+			if (param1 != null)
+			{
+				inString = String(param1);
+				inString = inString.replace(sPapyrusStringEscapeSequence, "");
+				
+				return inString.length;
+			}
+			
+			return 0;
+		}
+		
+		public function StringFormatPapyrus(param1:Object, ...rest) : String
+		{
+			var inString:String = "";
+			if (param1 != null)
+			{
+				inString = String(param1);
+				return printf(inString, rest)
+			}
+			
+			return "";
+		}
+		
+		public function StringRepeatPapyrus(param1:Object, ...rest) : String
+		{
+			var sequenceToRepeat:String = "";
+			var repetitions:int = 1;
+			var retVal:String = "";
+			
+			if (param1 != null)
+			{
+				sequenceToRepeat = String(param1);
+				
+				if (sequenceToRepeat != "")
+				{
+					if (rest[0] != null)
+					{
+						repetitions = int(rest[0]);
+					}
+					
+					for (var i:int = 0; i < repetitions; i++)
+					{
+						retVal.concat(sequenceToRepeat)
+					}
+					
+					return retVal;					
+				}
+			}
+			
+			return ""
 		}		
 	}	
 }

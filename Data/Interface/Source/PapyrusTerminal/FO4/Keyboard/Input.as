@@ -361,18 +361,21 @@
          switch(param1)
          {
             case "DISABLED":
-			   // the E / Activate key raises a DISABLED event for my install. not sure if that's universal ?
+			   // the E / Activate key raises a DISABLED event for my install. not sure if that's universal, but it seems to work fine for other people.
 			   this._UEactivateActive = param2			   
                if(param2)               
 			   {
 				   // hack to prevent from double counting the initial keystroke
 				   this._UEactivateFilterFirst = true;
-                   ++this._disabledKeysPressed;
+                  
+				   ++this._disabledKeysPressed;
                }
                else
                {
-				   this._UEactivateFilterFirst = false;
-                  --this._disabledKeysPressed;
+				   // clear initial keystroke filter if key gets released
+				  this._UEactivateFilterFirst = false;
+                  
+				  --this._disabledKeysPressed;
 				  if (this._disabledKeysPressed < 0) { this._disabledKeysPressed = 0; }
                }
                return true;
@@ -390,7 +393,6 @@
             case "Activate":
                if(param2)
                {
-                  //this._filterOn = true;
 				  this._filterCount++
                }
                return true;
@@ -401,65 +403,30 @@
                   //this._filterOn = true;
 				  this._filterCount++				
 				  HandleStrafeLeft();
-//                  if(this._userEventMap["StrafeLeft"] != null)
-//                  {
-//                     this.handleTextInput(this._userEventMap["StrafeLeft"]);
-//                  }
-//                  else
-//                  {
-//                     this.handleTextInput("a");
-//                  }
                }
                return true;
             case "StrafeRight":
                this._UEstrafeRightActive = param2;
 			   if(param2 && this._watchForText)
                {
-                  //this._filterOn = true;
 				  this._filterCount++				  
 				  HandleStrafeRight();
-//                  if(this._userEventMap["StrafeRight"] != null)
-//                  {
-//                     this.handleTextInput(this._userEventMap["StrafeRight"]);
-//                  }
-//                  else
-//                  {
-//                     this.handleTextInput("d");
-//                  }
                }
                return true;
             case "Forward":
 				this._UEforwardActive = param2;
                if(param2 && this._watchForText)
                {
-                  //this._filterOn = true;
 				  this._filterCount++
 				  HandleForward();
-//                  if(this._userEventMap["Forward"] != null)
-//                  {
-//                     this.handleTextInput(this._userEventMap["Forward"]);
-//                  }
-//                  else
-//                  {
-//                     this.handleTextInput("w");
-//                  }
                }
                return true;
             case "Back":
 				this._UEbackActive = param2;
                if(param2 && this._watchForText)
                {
-                  //this._filterOn = true;
 				  this._filterCount++
 				  HandleBack();
-//                  if(this._userEventMap["Back"] != null)
-//                  {
-//                     this.handleTextInput(this._userEventMap["Back"]);
-//                  }
-//                  else
-//                  {
-//                     this.handleTextInput("s");
-//                  }
                }
                return true;
             case "Accept":
