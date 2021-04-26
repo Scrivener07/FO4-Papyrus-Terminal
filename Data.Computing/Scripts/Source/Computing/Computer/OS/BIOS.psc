@@ -29,11 +29,11 @@ string COMMAND_TIME = "TIME" const
 
 
 ; Processing
-bool Abort = false
+bool Continue = true
 bool Property Processing Hidden
 	{Represents the abort condition for the command processor.}
 	bool Function Get()
-		return !Abort && IsBoundGameObjectAvailable()
+		return Continue && !TerminalShutdown
 	EndFunction
 EndProperty
 
@@ -52,6 +52,15 @@ Event OnPapyrusTerminalReady()
 
 	PrintLine("The shell is starting...")
 	UI.Load(TerminalHolotapeMenu, "root1", OS_Asset, self, "BootCallback")
+EndEvent
+
+
+Function BootCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
+	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
+	Continue = true
+	OS_Instance = assetInstance
+
+	Setup()
 
 	ClearHome()
 	VER()
@@ -69,25 +78,21 @@ Event OnPapyrusTerminalReady()
 
 	; terminate
 	End()
-EndEvent
-
-
-Function BootCallback(bool success, string menuName, string menuRoot, string assetInstance, string assetFile)
-	Debug.TraceSelf(self, "BootCallback", "success:"+success+", menuName:"+menuName+", menuRoot:"+menuRoot+", assetInstance:"+assetInstance+", assetFile:"+assetFile)
-	Abort = false
-	OS_Instance = assetInstance
-	var[] arguments = new var[1]
-	arguments[0] = Computer:Drive:IO.GetDirectoryCurrent()
-	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".DriveRoot", arguments)
-	Debug.TraceSelf(self, "BootCallback", arguments)
 EndFunction
 
 
 Event OnPapyrusTerminalShutdown()
 	Debug.TraceSelf(self, "OnPapyrusTerminalShutdown", "Shutdown")
-	Abort = false
+	Continue = false
 EndEvent
 
+
+Function Setup()
+	var[] arguments = new var[1]
+	arguments[0] = Computer:Drive:IO.GetDirectoryCurrent()
+	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".DriveRoot", arguments)
+	Debug.TraceSelf(self, "Setup", arguments)
+EndFunction
 
 
 ; CMD
@@ -132,7 +137,7 @@ EndFunction
 ; Quits the CMD.EXE program (command interpreter) or the current batch script.
 Function EXIT(string[] command)
 	Debug.TraceSelf(self, "EXIT", command)
-	Abort = true
+	Continue = false
 EndFunction
 
 
