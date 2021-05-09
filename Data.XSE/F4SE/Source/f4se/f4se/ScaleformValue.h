@@ -107,21 +107,21 @@ public:
 		void SetYRotation(double degrees)	{ SetFlags(kChange_yrotation); _yRotation = degrees; }
 		void SetZScale(double zscale)		{ SetFlags(kChange_zscale); _zScale = zscale; }
 		void SetFOV(double fov)				{ SetFlags(kChange_FOV); _perspFOV = fov; }
-		void SetProjectionMatrix3D(const GMatrix4F *pmat)  
-		{ 
+		void SetProjectionMatrix3D(const GMatrix4F *pmat)
+		{
 			if (pmat) {
 				SetFlags(kChange_projMatrix3D);
 				_perspectiveMatrix3D = *pmat;
 			} else
-				ClearFlags(kChange_projMatrix3D); 
+				ClearFlags(kChange_projMatrix3D);
 		}
-		void SetViewMatrix3D(const GMatrix3F *pmat) 
-		{ 
-			if (pmat) { 
-				SetFlags(kChange_viewMatrix3D); 
+		void SetViewMatrix3D(const GMatrix3F *pmat)
+		{
+			if (pmat) {
+				SetFlags(kChange_viewMatrix3D);
 				_viewMatrix3D = *pmat;
 			} else
-				ClearFlags(kChange_viewMatrix3D); 
+				ClearFlags(kChange_viewMatrix3D);
 		}
 
 		// Convenience functions
@@ -136,11 +136,11 @@ public:
 	{
 	public:
 		class ArrayVisitor
-        {
-        public:
-            virtual ~ArrayVisitor() {}
-            virtual void Visit(UInt32 idx, GFxValue * val) = 0;
-        };
+		{
+		public:
+			virtual ~ArrayVisitor() {}
+			virtual void Visit(UInt32 idx, GFxValue * val) = 0;
+		};
 		class ObjVisitor
 		{
 		public:
@@ -347,7 +347,7 @@ class BSGFxShaderFXTarget : public BSGFxDisplayObject,
 {
 public:
 	BSGFxShaderFXTarget() { }
-	BSGFxShaderFXTarget(GFxValue * source) : BSGFxDisplayObject(source), 
+	BSGFxShaderFXTarget(GFxValue * source) : BSGFxDisplayObject(source),
 		HUDColorType(kHUDColorTypes_NoColorMultiplier), backgroundColorType(kHUDColorTypes_NoColorMultiplier) {  }//{ CALL_MEMBER_FN(this, Impl_ctor)(source); }
 	virtual ~BSGFxShaderFXTarget();// { CALL_MEMBER_FN(this, Impl_dtor)(); };
 
@@ -359,8 +359,8 @@ public:
 	virtual	EventResult	ReceiveEvent(ApplyColorUpdateEvent * evn, void * dispatcher);
 
 	UIShaderColors shaderFX;						// 38
-	BSTArray<BSGFxShaderFXTarget*> shaderFXObjects;	// 
-	HUDColorTypes HUDColorType;						// 
+	BSTArray<BSGFxShaderFXTarget*> shaderFXObjects;	//
+	HUDColorTypes HUDColorType;						//
 	HUDColorTypes backgroundColorType;
 
 	DEFINE_STATIC_HEAP(Heap_Allocate, Heap_Free)

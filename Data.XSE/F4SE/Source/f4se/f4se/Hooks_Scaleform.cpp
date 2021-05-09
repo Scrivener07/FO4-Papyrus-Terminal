@@ -137,7 +137,7 @@ public:
 		VirtualMachine * vm = (*g_gameVM)->m_virtualMachine;
 
 		g_externalEventRegs.ForEach(
-			eventName, 
+			eventName,
 			[&args, &vm](const EventRegistration<ExternalEventParameters> & reg)
 			{
 				VMValue receiver;
@@ -431,7 +431,7 @@ public:
 						texture->DecRef();
 					}
 				}
-				
+
 				it->second.clear();
 				s_mountedTextures.erase(it);
 			}
@@ -466,7 +466,7 @@ void ScaleformInitHook_Install(GFxMovieView * view)
 	RegisterFunction<F4SEScaleform_GetDirectoryListing>(&f4se, movieRoot, "GetDirectoryListing");
 	RegisterFunction<F4SEScaleform_MountImage>(&f4se, movieRoot, "MountImage");
 	RegisterFunction<F4SEScaleform_UnmountImage>(&f4se, movieRoot, "UnmountImage");
-	
+
 	GFxValue	version;
 	movieRoot->CreateObject(&version);
 	version.SetMember("major", &GFxValue(F4SE_VERSION_INTEGER));
@@ -517,7 +517,7 @@ void ScaleformInitHook_Install(GFxMovieView * view)
 			}
 		}
 	}
-	
+
 	GFxValue dispatchEvent;
 	GFxValue eventArgs[3];
 	movieRoot->CreateString(&eventArgs[0], "F4SE::Initialized");
@@ -558,7 +558,7 @@ UInt32 BSScaleformTint_Hook(BSGFxShaderFXTarget * value, float * colors, float m
 		GFxValue args[4];
 		args[0] = GFxValue(colors[0]);
 		args[1] = GFxValue(colors[1]);
-		args[2] = GFxValue(colors[2]); 
+		args[2] = GFxValue(colors[2]);
 		args[3] = GFxValue(multiplier);
 		value->Invoke("onApplyColorChange", &result, args, 4);
 		if(result.IsArray() && result.GetArraySize() >= 4)
@@ -574,7 +574,7 @@ UInt32 BSScaleformTint_Hook(BSGFxShaderFXTarget * value, float * colors, float m
 			multiplier = args[3].GetNumber();
 		}
 	}
-	
+
 	return BSScaleformTint_Original(value, colors, multiplier);
 }
 
