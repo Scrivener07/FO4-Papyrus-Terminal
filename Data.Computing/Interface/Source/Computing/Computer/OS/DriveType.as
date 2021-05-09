@@ -1,11 +1,11 @@
-package Computing
+package Computer.OS
 {
 	import System.Diagnostics.Debug;
 	import System.Diagnostics.Utility;
 	import F4SE.XSE;
 
 	// Represents a device for storage such as RAM, Tape, Disk, etc.
-	public class SystemDrive
+	public class DriveType
 	{
 		/** Navigation */
 		//---------------------------------------------
@@ -18,10 +18,6 @@ package Computing
 
 		/** The full path string to the root game directory.
 		 * ex: `E:\Bethesda\steamapps\common\Fallout 4`
-		 *
-		 * TODO: Possibly, the path seperators must be delimited, or xse functions will cause a crash.
-		 * TODO: Possibly store this root path as a folder array.
-		 *       This it can be joined in the correct format.
 		 */
 		private var RootPath:String;
 
@@ -35,7 +31,7 @@ package Computing
 		// Initialize
 		//---------------------------------------------
 
-		public function SystemDrive()
+		public function DriveType()
 		{
 			Debug.WriteLine("[DRIVE]", "(CTOR)");
 			RootPath = null;
@@ -45,17 +41,44 @@ package Computing
 		}
 
 
+		// XSE
+		//---------------------------------------------
+
+		private static function GetDirectoryGame():String
+		{
+			try
+			{
+				return XSE.API.plugins.Computer.GetDirectoryGame();
+			}
+			catch (error:Error)
+			{
+				Debug.WriteLine("[DRIVE]", "(GetDirectoryGame)", "Exception", String(error));
+			}
+
+			return null;
+		}
+
+
+		private static function GetListing(directory:String, filter:String, recursive:Boolean):*
+		{
+			try
+			{
+				return XSE.API.plugins.Computer.GetDirectoryListing(directory, filter, recursive);
+			}
+			catch (error:Error)
+			{
+				Debug.WriteLine("[DRIVE]", "(GetListing)", "Exception", String(error));
+			}
+		}
+
+
 		// Paths
 		//---------------------------------------------
 
-		/**
-		 * Set the full path to the root game directory.
-		 * ex: `E:\Bethesda\steamapps\common\Fallout 4`
-		*/
-		public function Root(directory:String):void
+		public function Setup():void
 		{
-			RootPath = directory;
-			Debug.WriteLine("[DRIVE]", "(Root)", "{directory: `"+directory+"`}", "{RootPath: '"+RootPath+"'}");
+			RootPath = GetDirectoryGame();
+			Debug.WriteLine("[DRIVE]", "(Setup)", "{RootPath: '"+RootPath+"'}");
 		}
 
 
@@ -97,17 +120,15 @@ package Computing
 			{
 				Debug.WriteLine("[DRIVE]", "(DirectoryChange)", "path: '"+path+"'");
 
-				if (path == SystemDrive.CD)
+				if (path == DriveType.CD)
 				{
 					// does not really change the current directory
 					return;
 				}
 
-
 				// Split path string into folder array.
 				var folders:Array = path.split("\\");
 				var index:int = 0;
-
 
 				// use a reverse `for` loop to check for `..` first
 				var length:int = folders.length;
@@ -115,13 +136,12 @@ package Computing
 				{
 					var fldr:String = folders[index];
 					Debug.WriteLine("[DRIVE]", "{PATH}", "    @"+index+" | "+(index + 1)+" of "+folders.length, "{path: '"+path+"'}", "{fldr: '"+fldr+"'}");
-					if (fldr == SystemDrive.CD_UP)
+					if (fldr == DriveType.CD_UP)
 					{
 						Folders.pop();
 						Debug.WriteLine("[DRIVE]", "{PATH:UP}", "popped!");
 					}
 				}
-
 
 				// Populate
 				index = 0;
@@ -129,15 +149,14 @@ package Computing
 				{
 					Debug.WriteLine("[DRIVE]", "(DirectoryChange)", "    @"+index+" | "+(index + 1)+" of "+folders.length, "{path: '"+path+"'}", "{folder: '"+folder+"'}");
 
-					if (folder == SystemDrive.CD)
+					if (folder == DriveType.CD)
 					{
 						// current directory
 						break;
 					}
 
-
-					if (folder == SystemDrive.CD_UP) {}
-					else if (folder == SystemDrive.CD_ROOT)
+					if (folder == DriveType.CD_UP) {}
+					else if (folder == DriveType.CD_ROOT)
 					{
 						if (Folders.length == 1)
 						{
@@ -169,15 +188,16 @@ package Computing
 		// List
 		//---------------------------------------------
 
-		public function DirectoryList(path:String):*
+
+
+
+		public function DirectoryList():*
 		{
 			try
 			{
 				var directory:String = GetDirectoryFull();
-
-				var listing:Array = XSE.API.GetDirectoryListing(directory, "*", false);
+				var listing:Array = GetListing(directory, "*", false);
 				Debug.WriteLine("[DRIVE]", "(DirectoryList)", "{Directory: '"+directory+"'}", "{listing.length: ", listing.length+"}");
-
 
 				var values:Array = new Array(listing.length);
 				if (listing.length > 0)
@@ -210,6 +230,25 @@ package Computing
 			}
 
 			return null;
+		}
+
+
+		// Debug
+		//---------------------------------------------
+
+		private function TraceFileEntries(directory:String, result:Array):void
+		{
+			if (result.length > 0)
+			{
+				for each (var entry in result)
+				{
+					Debug.WriteLine("(CD)", "'"+directory+"'", "+ name:         ", entry.name);
+					Debug.WriteLine("(CD)", "'"+directory+"'", "+ -- nativePath: ", entry.nativePath);
+					Debug.WriteLine("(CD)", "'"+directory+"'", "+ -- isDirectory:", entry.isDirectory);
+					Debug.WriteLine("(CD)", "'"+directory+"'", "+ -- isHidden:   ", entry.isHidden);
+					Debug.WriteLine("");
+				}
+			}
 		}
 
 

@@ -1,12 +1,11 @@
 ScriptName Computer:OS:BIOS extends PapyrusTerminal:BIOS
 
-
 ; Menu Base
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
 
 ; Menu Code
 string OS_Instance
-string OS_Asset = "Computer_OS.swf" const
+string OS_Asset = "Computer.swf" const
 string COMMAND_TYPE_LoadCompleteEvent = "Computer:COMMAND_TYPE_LoadCompleteEvent" const
 
 ; Command Index
@@ -60,8 +59,6 @@ Function BootCallback(bool success, string menuName, string menuRoot, string ass
 	Continue = true
 	OS_Instance = assetInstance
 
-	Setup()
-
 	ClearHome()
 	VER()
 	PrintLine("")
@@ -76,8 +73,7 @@ Function BootCallback(bool success, string menuName, string menuRoot, string ass
 		PrintLine("")
 	EndWhile
 
-	; terminate
-	End()
+	End() ; terminate
 EndFunction
 
 
@@ -85,14 +81,6 @@ Event OnPapyrusTerminalShutdown()
 	Debug.TraceSelf(self, "OnPapyrusTerminalShutdown", "Shutdown")
 	Continue = false
 EndEvent
-
-
-Function Setup()
-	var[] arguments = new var[1]
-	arguments[0] = Computer:Drive:IO.GetDirectoryCurrent()
-	UI.Invoke(TerminalHolotapeMenu, OS_Instance+".DriveRoot", arguments)
-	Debug.TraceSelf(self, "Setup", arguments)
-EndFunction
 
 
 ; CMD

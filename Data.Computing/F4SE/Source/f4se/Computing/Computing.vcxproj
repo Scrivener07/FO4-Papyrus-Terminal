@@ -90,12 +90,11 @@
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>common/IPrefix.h</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>
-      </Message>
+      <Command>copy "$(TargetPath)" "$(Fallout4Path)\$(TargetFileName)"</Command>
+      <Message>Installing DLL...</Message>
     </PostBuildEvent>
     <Link>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
@@ -130,6 +129,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>common/IPrefix.h</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -152,16 +152,12 @@ If NOT exist %mo2_target% mklink /J %mo2_target% "$(ProjectDir)Data\"</Command>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Shared.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Messaging.cpp" />
-    <ClCompile Include="Papyrus.cpp" />
-    <ClCompile Include="Scaleform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Messaging.h" />
-    <ClInclude Include="Papyrus.h" />
+    <ClInclude Include="Shared.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="Scaleform.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common_vc11.vcxproj">

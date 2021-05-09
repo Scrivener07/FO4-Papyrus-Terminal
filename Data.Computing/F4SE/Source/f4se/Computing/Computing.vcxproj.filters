@@ -2,14 +2,8 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scaleform.cpp">
-      <Filter>Scaleform</Filter>
-    </ClCompile>
-    <ClCompile Include="Papyrus.cpp">
-      <Filter>Papyrus</Filter>
-    </ClCompile>
-    <ClCompile Include="Messaging.cpp">
-      <Filter>Messaging</Filter>
+    <ClCompile Include="Shared.cpp">
+      <Filter>Shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -17,26 +11,14 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Scaleform">
-      <UniqueIdentifier>{266f6835-2465-461c-8551-e610da6b07ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Papyrus">
-      <UniqueIdentifier>{5e94734b-664c-4470-80b1-cb0420c65381}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Messaging">
-      <UniqueIdentifier>{277866ae-e64d-490b-a333-8f114bb02fc1}</UniqueIdentifier>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{c5706017-998b-473a-803a-5befe54d7ac1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scaleform.h">
-      <Filter>Scaleform</Filter>
-    </ClInclude>
     <ClInclude Include="Main.h" />
-    <ClInclude Include="Papyrus.h">
-      <Filter>Papyrus</Filter>
-    </ClInclude>
-    <ClInclude Include="Messaging.h">
-      <Filter>Messaging</Filter>
+    <ClInclude Include="Shared.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

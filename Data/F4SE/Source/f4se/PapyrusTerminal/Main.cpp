@@ -7,9 +7,6 @@
 
 // Project
 #include "Main.h"
-#include "Scaleform.h"
-#include "Papyrus.h"
-#include "Messaging.h"
 
 
 // Fields
@@ -17,9 +14,9 @@
 
 IDebugLog               gLog;
 PluginHandle            g_pluginHandle = kPluginHandle_Invalid;
-F4SEMessagingInterface* g_messaging = NULL;
-F4SEPapyrusInterface*   g_papyrus   = NULL;
-F4SEScaleformInterface* g_scaleform = NULL;
+//F4SEMessagingInterface* g_messaging = NULL;
+//F4SEPapyrusInterface*   g_papyrus   = NULL;
+//F4SEScaleformInterface* g_scaleform = NULL;
 
 
 extern "C"
@@ -57,29 +54,6 @@ extern "C"
 			return false;
 		}
 
-		// Query the papyrus interface
-		g_papyrus = (F4SEPapyrusInterface*)f4se->QueryInterface(kInterface_Papyrus);
-		if (!g_papyrus)
-		{
-			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Papyrus interface.");
-			return false;
-		}
-
-		// Query the scaleform interface
-		g_scaleform = (F4SEScaleformInterface*)f4se->QueryInterface(kInterface_Scaleform);
-		if (!g_scaleform)
-		{
-			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Scaleform interface.");
-			return false;
-		}
-
-		// Query the messaging interface
-		g_messaging = (F4SEMessagingInterface*)f4se->QueryInterface(kInterface_Messaging);
-		if (!g_messaging)
-		{
-			_FATALERROR("Main::F4SEPlugin_Query(): Could not get the XSE Messaging interface.");
-			return false;
-		}
 
 		return true;
 	}
@@ -92,21 +66,6 @@ extern "C"
 	/// <returns>true on success</returns>
 	bool F4SEPlugin_Load(const F4SEInterface * f4se)
 	{
-		if (g_messaging->RegisterListener(g_pluginHandle, "F4SE", Messaging::OnMessage))
-		{
-			_MESSAGE("Main::F4SEPlugin_Load(): Registered Messaging");
-		}
-
-		if (g_papyrus->Register(Papyrus::RegisterFunctions))
-		{
-			_MESSAGE("Main::F4SEPlugin_Load(): Registered Papyrus");
-		}
-
-		if (g_scaleform->Register("Kernal", Scaleform::RegisterFunctions))
-		{
-			_MESSAGE("Main::F4SEPlugin_Load(): Registered Scaleform");
-		}
-
 		return true;
 	}
 

@@ -1,9 +1,11 @@
 ScriptName Computer:Terminal extends Terminal
+{DEV-ONLY}
 
 string TerminalMenu = "TerminalMenu" const
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
 string PipboyMenu = "PipboyMenu" const
 string MessageBoxMenu = "MessageBoxMenu" const
+
 
 ; Events
 ;---------------------------------------------

@@ -153,15 +153,9 @@ If NOT exist %mo2_target% mklink /J %mo2_target% "$(ProjectDir)Data\"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Messaging.cpp" />
-    <ClCompile Include="Papyrus.cpp" />
-    <ClCompile Include="Scaleform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Messaging.h" />
-    <ClInclude Include="Papyrus.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="Scaleform.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common_vc11.vcxproj">
