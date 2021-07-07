@@ -10,4 +10,21 @@
   <ItemGroup>
     <ClInclude Include="Options.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\sourcelist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\headerlist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include=".cmake">
+      <UniqueIdentifier>{49088578-9986-4140-bd4d-769943d4e80b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

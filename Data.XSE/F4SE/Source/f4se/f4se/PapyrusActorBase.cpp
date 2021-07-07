@@ -9,7 +9,7 @@
 DECLARE_STRUCT(BodyWeight, "ActorBase")
 
 namespace papyrusActorBase
-{	
+{
 	TESNPC* GetTemplate(TESNPC* thisNPC, bool topMost)
 	{
 		TESNPC * node = nullptr;

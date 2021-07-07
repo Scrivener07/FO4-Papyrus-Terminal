@@ -2,19 +2,26 @@ ScriptName Computer:Terminal extends Terminal
 {DEV-ONLY}
 
 string TerminalMenu = "TerminalMenu" const
+string TerminalMenuButtons = "TerminalMenuButtons" const
 string TerminalHolotapeMenu = "TerminalHolotapeMenu" const
-string PipboyMenu = "PipboyMenu" const
-string MessageBoxMenu = "MessageBoxMenu" const
 
+string PipboyMenu = "PipboyMenu" const
+string PipboyHolotapeMenu = "PipboyHolotapeMenu" const
+
+string MessageBoxMenu = "MessageBoxMenu" const
+string CursorMenu = "CursorMenu" const
 
 ; Events
 ;---------------------------------------------
 
 Event OnInit()
 	RegisterForMenuOpenCloseEvent(TerminalMenu)
+	RegisterForMenuOpenCloseEvent(TerminalMenuButtons)
 	RegisterForMenuOpenCloseEvent(TerminalHolotapeMenu)
 	RegisterForMenuOpenCloseEvent(PipboyMenu)
+	RegisterForMenuOpenCloseEvent(PipboyHolotapeMenu)
 	RegisterForMenuOpenCloseEvent(MessageBoxMenu)
+	RegisterForMenuOpenCloseEvent(CursorMenu)
 EndEvent
 
 

@@ -19,10 +19,10 @@ Event OnPapyrusTerminalShutdown()
 EndEvent
 
 ; Terminal is initializing, used to set text replacement token data
-Event OnPapyrusTerminalInitialize(ObjectReference refTerminal) native
+Event OnPapyrusTerminalInitialize(ObjectReference refTerminal) Native
 
 ; Async Terminal ReadLine operation completed.
-Event OnPapyrusTerminalReadAsyncCompleted(String readBuffer) native
+Event OnPapyrusTerminalReadAsyncCompleted(String readBuffer) Native
 
 ; Async Terminal ReadLine operation was cancelled
-Event OnPapyrusTerminalReadAsyncCancelled() native
+Event OnPapyrusTerminalReadAsyncCancelled() Native

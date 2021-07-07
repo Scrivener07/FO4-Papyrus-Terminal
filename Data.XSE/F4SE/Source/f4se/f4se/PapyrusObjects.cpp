@@ -102,7 +102,7 @@ bool F4SEPersistentObjectStorage::Save(const F4SESerializationInterface* intfc)
 		// Data of free indices is null, so we skip these
 		if (e.obj == NULL)
 			continue;
-		
+
 		// Skip to next entry if write failed
 		if (! WriteF4SEObject(intfc, e.obj))
 			continue;
@@ -145,7 +145,7 @@ bool F4SEPersistentObjectStorage::Load(const F4SESerializationInterface* intfc, 
 
 		data_[index] = e;
 	}
-	
+
 	// Rebuild free index list
 	for (UInt32 i=0; i<data_.size(); i++)
 		if (data_[i].obj == NULL)

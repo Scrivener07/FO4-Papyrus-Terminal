@@ -19,6 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="IArchive.cpp" />
+    <ClCompile Include="IConsole.cpp" />
+    <ClCompile Include="IDatabase.cpp" />
+    <ClCompile Include="IDynamicCreate.cpp" />
+    <ClCompile Include="IFIFO.cpp" />
+    <ClCompile Include="IMemPool.cpp" />
+    <ClCompile Include="IPipeClient.cpp" />
+    <ClCompile Include="IPipeServer.cpp" />
+    <ClCompile Include="IRangeMap.cpp" />
+    <ClCompile Include="IReadWriteLock.cpp" />
+    <ClCompile Include="ITextParser.cpp" />
+    <ClCompile Include="IThread.cpp" />
     <ClCompile Include="IBufferStream.cpp" />
     <ClCompile Include="IDataStream.cpp" />
     <ClCompile Include="IDebugLog.cpp" />
@@ -35,6 +47,19 @@
     <ClCompile Include="ITypes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IArchive.h" />
+    <ClInclude Include="IConsole.h" />
+    <ClInclude Include="IDatabase.h" />
+    <ClInclude Include="IDynamicCreate.h" />
+    <ClInclude Include="IFIFO.h" />
+    <ClInclude Include="ILinkedList.h" />
+    <ClInclude Include="IMemPool.h" />
+    <ClInclude Include="IPipeClient.h" />
+    <ClInclude Include="IPipeServer.h" />
+    <ClInclude Include="IRangeMap.h" />
+    <ClInclude Include="IReadWriteLock.h" />
+    <ClInclude Include="ITextParser.h" />
+    <ClInclude Include="IThread.h" />
     <ClInclude Include="IBufferStream.h" />
     <ClInclude Include="ICriticalSection.h" />
     <ClInclude Include="IDataStream.h" />
@@ -50,6 +75,17 @@
     <ClInclude Include="ISingleton.h" />
     <ClInclude Include="ITimer.h" />
     <ClInclude Include="ITypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\config.cmake.in" />
+    <None Include="cmake\headerlist.cmake" />
+    <None Include="cmake\sourcelist.cmake" />
+    <None Include="IDatabase.inc" />
+    <None Include="LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D4C128A1-73DC-4941-A453-CE55AF239BA8}</ProjectGuid>

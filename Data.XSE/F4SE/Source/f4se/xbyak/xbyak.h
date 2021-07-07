@@ -31,7 +31,7 @@
 
 // This covers -std=(gnu|c)++(0x|11|1y), -stdlib=libc++, and modern Microsoft.
 #if ((defined(_MSC_VER) && (_MSC_VER >= 1600)) || defined(_LIBCPP_VERSION) ||\
-	 			 ((__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)))
+				 ((__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)))
 	#include <unordered_map>
 	#define XBYAK_STD_UNORDERED_MAP std::unordered_map
 	#define XBYAK_STD_UNORDERED_MULTIMAP std::unordered_multimap
@@ -1604,7 +1604,7 @@ private:
 		} else {
 			db(getModRM(3, r.getIdx(), p2->getIdx()));
 		}
-        if (imm8 != NONE) db(imm8);
+		if (imm8 != NONE) db(imm8);
 	}
 	// (r, r, r/m) if isR_R_RM
 	// (r, r/m, r)
@@ -1745,7 +1745,7 @@ public:
 	void test(const Operand& op, uint32 imm)
 	{
 		verifyMemHasSize(op);
-        int immSize = (std::min)(op.getBit() / 8, 4U);
+		int immSize = (std::min)(op.getBit() / 8, 4U);
 		if (op.isREG() && op.getIdx() == 0) { // al, ax, eax
 			rex(op);
 			db(B10101000 | (op.isBit(8) ? 0 : 1));
@@ -1770,7 +1770,7 @@ public:
 	void imul(const Reg& reg, const Operand& op, int imm)
 	{
 		int s = inner::IsInDisp8(imm) ? 1 : 0;
-        int immSize = s ? 1 : reg.isREG(16) ? 2 : 4;
+		int immSize = s ? 1 : reg.isREG(16) ? 2 : 4;
 		opModRM(reg, op, op.isREG() && (reg.getKind() == op.getKind()), op.isMEM(), B01101001 | (s << 1), NONE, NONE, immSize);
 		db(imm, immSize);
 	}

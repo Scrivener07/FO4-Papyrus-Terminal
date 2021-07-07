@@ -1,10 +1,11 @@
 package Computer.OS
 {
 	import System.Diagnostics.Debug;
-	import System.Diagnostics.Utility;
-	import F4SE.XSE;
+	import Computer.OS.Kernel;
 
-	// Represents a device for storage such as RAM, Tape, Disk, etc.
+	/**
+	 * Represents a device for storage such as RAM, Tape, Disk, etc.
+	*/
 	public class DriveType
 	{
 		/** Navigation */
@@ -41,43 +42,13 @@ package Computer.OS
 		}
 
 
-		// XSE
-		//---------------------------------------------
-
-		private static function GetDirectoryGame():String
-		{
-			try
-			{
-				return XSE.API.plugins.Computer.GetDirectoryGame();
-			}
-			catch (error:Error)
-			{
-				Debug.WriteLine("[DRIVE]", "(GetDirectoryGame)", "Exception", String(error));
-			}
-
-			return null;
-		}
-
-
-		private static function GetListing(directory:String, filter:String, recursive:Boolean):*
-		{
-			try
-			{
-				return XSE.API.plugins.Computer.GetDirectoryListing(directory, filter, recursive);
-			}
-			catch (error:Error)
-			{
-				Debug.WriteLine("[DRIVE]", "(GetListing)", "Exception", String(error));
-			}
-		}
-
-
 		// Paths
 		//---------------------------------------------
 
+		/** Setup the root drive path.*/
 		public function Setup():void
 		{
-			RootPath = GetDirectoryGame();
+			RootPath = Kernel.GetDirectoryGame();
 			Debug.WriteLine("[DRIVE]", "(Setup)", "{RootPath: '"+RootPath+"'}");
 		}
 
@@ -100,18 +71,7 @@ package Computer.OS
 		}
 
 
-		/** This path is relative from this swf, to the current directory. */
-		public function GetDirectoryAS3():String
-		{
-			var folders:Vector.<String> = Folders.concat(); // copy vector
-			folders.shift();
-			var value:String = folders.join("\\");
-			Debug.WriteLine("[DRIVE]", "(GetDirectoryAS3)", "{value: '"+value+"'}");
-			return value;
-		}
-
-
-		// Change
+		// Directory Change
 		//---------------------------------------------
 
 		public function DirectoryChange(path:String):void
@@ -189,14 +149,13 @@ package Computer.OS
 		//---------------------------------------------
 
 
-
-
+		// TODO: verify return type
 		public function DirectoryList():*
 		{
 			try
 			{
 				var directory:String = GetDirectoryFull();
-				var listing:Array = GetListing(directory, "*", false);
+				var listing:Array = Kernel.GetListing(directory, "*", false);
 				Debug.WriteLine("[DRIVE]", "(DirectoryList)", "{Directory: '"+directory+"'}", "{listing.length: ", listing.length+"}");
 
 				var values:Array = new Array(listing.length);

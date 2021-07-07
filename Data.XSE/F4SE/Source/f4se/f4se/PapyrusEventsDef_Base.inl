@@ -75,7 +75,7 @@ void EVENT_NAME(
 	VirtualMachine * vm = (*g_gameVM)->m_virtualMachine;
 #if EVENT_OBJECT
 	VMValue receiver;
-	if(GetIdentifier(&receiver, handle, &className, vm)) {		
+	if(GetIdentifier(&receiver, handle, &className, vm)) {
 #endif
 		// Build the VM arguments for the CallFunctionNoWait
 		VMArray<VMVariable> arguments;

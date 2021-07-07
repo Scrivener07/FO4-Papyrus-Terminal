@@ -12,4 +12,24 @@
     <ClInclude Include="LoaderError.h" />
     <ClInclude Include="Steam.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\config.cmake.in">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\headerlist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\sourcelist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include=".cmake">
+      <UniqueIdentifier>{dfd05301-eabd-4ad0-a197-447aad55d11e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

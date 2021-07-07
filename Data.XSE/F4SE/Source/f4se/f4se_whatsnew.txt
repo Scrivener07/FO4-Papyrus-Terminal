@@ -45,15 +45,15 @@
 0.6.10
 - support for runtime 1.10.98
 - added GetExternalEventRegistrations to Papyrus Plugin API
-    - Returns all scripts and callbackName registered with F4SE's RegisterForExternalEvent
+	- Returns all scripts and callbackName registered with F4SE's RegisterForExternalEvent
 - added Form functions
-    - Get/SetRaceForm
-    - GetSlotMask
-    - AddSlotToMask
-    - RemoveSlotFromMask
+	- Get/SetRaceForm
+	- GetSlotMask
+	- AddSlotToMask
+	- RemoveSlotFromMask
 - added Armor.GetArmorAddons
 - added ArmorAddon class
-    - GetAdditionalRaces
+	- GetAdditionalRaces
 
 0.6.9
 - fixes UI.Load deadlock
@@ -62,12 +62,12 @@
 - support for runtime 1.10.89
 - changed locking implementations to BSReadWriteLock
 - added Scaleform functions to load dds images
-    - MountImage(menuName, pathToMount, mountName)
-    - UnmountImage(menuName, pathToUnmount)
-    - Image is loaded through URLRequest("img://mountName")
+	- MountImage(menuName, pathToMount, mountName)
+	- UnmountImage(menuName, pathToUnmount)
+	- Image is loaded through URLRequest("img://mountName")
 - added Scaleform receiving function
-    - function onF4SEObjCreated(codeObject:Object):void
-    - This function is called on the menu root document as well as first-level children
+	- function onF4SEObjCreated(codeObject:Object):void
+	- This function is called on the menu root document as well as first-level children
 
 0.6.7
 - support for runtime 1.10.82
@@ -84,9 +84,9 @@
 - added MatSwap class and MatSwap.Get/SetRemapData
 - added ObjectReference.ApplyMaterialSwap
 - added UI functions
-    - IsMenuRegistered
-    - RegisterCustomMenu
-    - Open/CloseMenu
+	- IsMenuRegistered
+	- RegisterCustomMenu
+	- Open/CloseMenu
 
 0.6.4
 - support for runtime 1.10.50
@@ -122,68 +122,68 @@
 
 0.4.2
 - Added DefaultObject class and functions:
-    - Get/Set
-    - GetDefaultObject
+	- Get/Set
+	- GetDefaultObject
 - Added ObjectReference functions:
-    - GetInventoryWeight
+	- GetInventoryWeight
 - Fixed Input binding
 - Fixed Perk.IsEligible
 - Added Math functions:
-    - Exp
+	- Exp
 - Added Location functions:
-    - SetParent
+	- SetParent
 - Added Actor functions:
-    - GetFurnitureReference
+	- GetFurnitureReference
 - Added ScriptObject functions:
-    - Un/registerForFurnitureEvent
-    - OnFurnitureEvent(Actor akActor, ObjectReference akFurniture, bool isGettingUp)
+	- Un/registerForFurnitureEvent
+	- OnFurnitureEvent(Actor akActor, ObjectReference akFurniture, bool isGettingUp)
 - Added ConstructibleObject functions:
-    - Get/SetConstructibleComponents
-    - Get/SetCreatedObject
-    - Get/SetCreatedCount
-    - Get/SetPriority
-    - Get/SetWorkbenchKeyword
+	- Get/SetConstructibleComponents
+	- Get/SetCreatedObject
+	- Get/SetCreatedCount
+	- Get/SetPriority
+	- Get/SetWorkbenchKeyword
 - Added Component functions:
-    - Get/SetScrapItem
-    - Get/SetScrapScalar
+	- Get/SetScrapItem
+	- Get/SetScrapScalar
 - Added MiscObject functions:
-    - Get/SetMiscComponents
+	- Get/SetMiscComponents
 
 0.4.1
 - Fixed bug when passing Script objects to Scaleform
 - Added ObjectReference Functions:
-    - TransmitConnectedPower
-    - GetConnectPoints
+	- TransmitConnectedPower
+	- GetConnectPoints
 
 0.4.0
 - InstanceData Get/SetDamageTypes now supports both Armor and Weapon instances
 - Added InstanceData functions:
-    - Get/SetWeight - supports Weapon and Armor instances
-    - Get/SetGoldValue - supports Weapon and Armor instances
+	- Get/SetWeight - supports Weapon and Armor instances
+	- Get/SetGoldValue - supports Weapon and Armor instances
 - Added ObjectReference Functions:
-    - GetInventoryItems
+	- GetInventoryItems
 
 0.3.2
 - Fixed Scaleform SendExternalEvent and CallFunctionNoWait
 - Fixed UI.Invoke when Args > 0
 - Added UI.Load (see UI.psc for example usage)
-- Added Scaleform GetDirectoryListing 
-    - e.g. root.f4se.GetDirectoryListing("Data/Somewhere", "*.ini", recursive=false)
-    result: Array=[{"nativePath": "Data/Somewhere/File.ini", "name": "File.ini", "lastModified": Date(), "creationDate": Date(), "isDirectory" : false, "isHidden": false0}]
+- Added Scaleform GetDirectoryListing
+	- e.g. root.f4se.GetDirectoryListing("Data/Somewhere", "*.ini", recursive=false)
+	result: Array=[{"nativePath": "Data/Somewhere/File.ini", "name": "File.ini", "lastModified": Date(), "creationDate": Date(), "isDirectory" : false, "isHidden": false0}]
 - Added Location Functions:
-    -GetParent
-    -Get/SetEncounterZone
+	-GetParent
+	-Get/SetEncounterZone
 - Added EncounterZone Functions:
-    -Get/SetLocation
-    -Get/SetRank
-    -Get/SetMinLevel
-    -Get/SetMaxLevel
-    -Set/IsNeverResetable
-    -Set/IsWorkshop
+	-Get/SetLocation
+	-Get/SetRank
+	-Get/SetMinLevel
+	-Get/SetMaxLevel
+	-Set/IsNeverResetable
+	-Set/IsWorkshop
 - InstanceData functions can now accept ObjectReferences as the Form
 - ObjectReference.GetAllMods is now inventory safe
 - Added Game Functions:
-    -SetGameSettingInt/Float/Bool/String
+	-SetGameSettingInt/Float/Bool/String
 
 0.3.1
 - Fixed script unique event registration
@@ -191,83 +191,83 @@
 - Added object serialization interface
 - Added Scaleform to Papyrus Adapters
 - Added Scaleform functions:
-    -AllowTextInput
-    -SendExternalEvent
-    -CallFunctionNoWait
+	-AllowTextInput
+	-SendExternalEvent
+	-CallFunctionNoWait
 - Added UI Functions:
-    -Set/Get/Invoke
+	-Set/Get/Invoke
 - Added ScriptObject Functions:
-    -Un/RegisterForExternalEvent
-    -Un/RegisterForCameraState
+	-Un/RegisterForExternalEvent
+	-Un/RegisterForCameraState
 - Added ObjectReference Functions:
-    -GetConnectedObjects
-    -AttachWire (Creates a disabled wire)
-    -CreateWire (non-native to Create and enable)
-    -GetDisplayName
+	-GetConnectedObjects
+	-AttachWire (Creates a disabled wire)
+	-CreateWire (non-native to Create and enable)
+	-GetDisplayName
 - Added Utility Functions:
-    -VarToVarArray
-    -VarArrayToVar
+	-VarToVarArray
+	-VarArrayToVar
 - Added Actor Functions:
-    -QueueUpdate
-    -GetInstanceOwner
+	-QueueUpdate
+	-GetInstanceOwner
 - Added ActorBase Functions:
-    -Get/SetBodyWeight
+	-Get/SetBodyWeight
 - Added Form functions:
-    -Set/GetName
-    -Set/GetWeight
-    -SetGoldValue
-    -GetKeywords
-    -HasWorldModel
-    -Set/GetWorldModelPath
-    -Set/GetIconPath
-    -Set/GetMessageIconPath
-    -Set/GetEnchantment
-    -Set/GetEnchantmentValue
-    -Set/GetEquipType
-    -GetDescription
+	-Set/GetName
+	-Set/GetWeight
+	-SetGoldValue
+	-GetKeywords
+	-HasWorldModel
+	-Set/GetWorldModelPath
+	-Set/GetIconPath
+	-Set/GetMessageIconPath
+	-Set/GetEnchantment
+	-Set/GetEnchantmentValue
+	-Set/GetEquipType
+	-GetDescription
 - Added Weapon functions:
-    -Set/GetEmbeddedMod
-    -GetInstanceOwner
+	-Set/GetEmbeddedMod
+	-GetInstanceOwner
 - Added new InstanceData global class functions:
-    -Set/GetAttackDamage
-    -Set/GetDamageTypes
-    -Set/GetAmmoCapacity
-    -Set/GetAccuracyBonus
-    -Set/GetActionPointCost
-    -Set/GetAttackDelay
-    -Set/GetOutOfRangeMultiplier
-    -Set/GetReloadSpeed
-    -Set/GetReach
-    -Set/GetMinRange
-    -Set/GetMaxRange
-    -Set/GetSpeed
-    -Set/GetStagger
-    -Set/GetMeleeSpeed
-    -Set/GetSkill
-    -Set/GetResist
-    -Set/GetCritMultiplier
-    -Set/GetCritChargeBonus
-    -Set/GetProjectileOverride
-    -Set/GetNumProjectiles
-    -Set/GetSightedTransition
+	-Set/GetAttackDamage
+	-Set/GetDamageTypes
+	-Set/GetAmmoCapacity
+	-Set/GetAccuracyBonus
+	-Set/GetActionPointCost
+	-Set/GetAttackDelay
+	-Set/GetOutOfRangeMultiplier
+	-Set/GetReloadSpeed
+	-Set/GetReach
+	-Set/GetMinRange
+	-Set/GetMaxRange
+	-Set/GetSpeed
+	-Set/GetStagger
+	-Set/GetMeleeSpeed
+	-Set/GetSkill
+	-Set/GetResist
+	-Set/GetCritMultiplier
+	-Set/GetCritChargeBonus
+	-Set/GetProjectileOverride
+	-Set/GetNumProjectiles
+	-Set/GetSightedTransition
 - Added ObjectMod functions:
-    -GetPropertyModifiers
-    -Set/GetMaxRank
-    -Set/GetPriority
-    -GetLooseMod
+	-GetPropertyModifiers
+	-Set/GetMaxRank
+	-Set/GetPriority
+	-GetLooseMod
 - Added Cell functions:
-    -GetWaterType
+	-GetWaterType
 - Added WaterType functions:
-    -Set/GetConsumeSpell
-    -Set/GetContactSpell
+	-Set/GetConsumeSpell
+	-Set/GetContactSpell
 - Added Perk functions:
-    -IsPlayable
-    -IsHidden
-    -GetLevel
-    -GetNumRanks
-    -GetNextPerk
-    -GetSWFPath
-    -IsEligible
+	-IsPlayable
+	-IsHidden
+	-GetLevel
+	-GetNumRanks
+	-GetNextPerk
+	-GetSWFPath
+	-IsEligible
 - Added Scaleform Translation Injection via Interface/Translations/ModName_en.txt
 
 0.3.0

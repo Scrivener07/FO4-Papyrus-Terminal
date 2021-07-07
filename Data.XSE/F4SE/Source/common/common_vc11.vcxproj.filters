@@ -41,6 +41,18 @@
     <ClCompile Include="ITimer.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
+    <ClCompile Include="IArchive.cpp" />
+    <ClCompile Include="IConsole.cpp" />
+    <ClCompile Include="IDatabase.cpp" />
+    <ClCompile Include="IDynamicCreate.cpp" />
+    <ClCompile Include="IFIFO.cpp" />
+    <ClCompile Include="IMemPool.cpp" />
+    <ClCompile Include="IPipeClient.cpp" />
+    <ClCompile Include="IPipeServer.cpp" />
+    <ClCompile Include="IRangeMap.cpp" />
+    <ClCompile Include="IReadWriteLock.cpp" />
+    <ClCompile Include="ITextParser.cpp" />
+    <ClCompile Include="IThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IPrefix.h" />
@@ -86,6 +98,19 @@
     <ClInclude Include="ITimer.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="IArchive.h" />
+    <ClInclude Include="IConsole.h" />
+    <ClInclude Include="IDatabase.h" />
+    <ClInclude Include="IDynamicCreate.h" />
+    <ClInclude Include="IFIFO.h" />
+    <ClInclude Include="ILinkedList.h" />
+    <ClInclude Include="IMemPool.h" />
+    <ClInclude Include="IPipeClient.h" />
+    <ClInclude Include="IPipeServer.h" />
+    <ClInclude Include="IRangeMap.h" />
+    <ClInclude Include="IReadWriteLock.h" />
+    <ClInclude Include="ITextParser.h" />
+    <ClInclude Include="IThread.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="streams">
@@ -103,5 +128,25 @@
     <Filter Include="utilities">
       <UniqueIdentifier>{0bd6b089-31f2-4bc9-acc5-4bf164af219b}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".cmake">
+      <UniqueIdentifier>{5849a2e0-304f-4a1b-88b8-cd03174831a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="LICENSE" />
+    <None Include="cmake\config.cmake.in">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\headerlist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\sourcelist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="IDatabase.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

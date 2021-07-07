@@ -252,7 +252,7 @@ public:
 
 		Super::Release();
 	}
-	
+
 	void Unregister(K & key, UInt64 handle, BSFixedString scriptName)
 	{
 		VirtualMachine * vm = (*g_gameVM)->m_virtualMachine;
@@ -287,7 +287,7 @@ public:
 
 		Super::Release();
 	}
-	
+
 	template <typename F>
 	void ForEach(K & key, F & functor)
 	{

@@ -90,7 +90,7 @@ namespace papyrusScriptObject
 		if(it != g_furnitureEventRegs.m_data.end()) {
 			params = const_cast<FormParameters*>(&it->params);
 		}
-		
+
 		if(var.IsNone())
 		{
 			// ObjectReference

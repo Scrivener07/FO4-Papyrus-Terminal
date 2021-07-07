@@ -16,4 +16,24 @@
   <ItemGroup>
     <ResourceCompile Include="f4se_version.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\sourcelist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\headerlist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\config.cmake.in">
+      <Filter>.cmake</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include=".cmake">
+      <UniqueIdentifier>{d8f71852-19ac-489d-8208-b6c2cf102ac8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

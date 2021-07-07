@@ -132,6 +132,10 @@
     <ClCompile Include="Translation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\config.cmake.in" />
+    <None Include="cmake\headerlist.cmake" />
+    <None Include="cmake\sourcelist.cmake" />
     <None Include="exports.def" />
     <None Include="GameRTTI.inl" />
     <None Include="PapyrusDelayFunctorsDef.inl" />
@@ -252,6 +256,9 @@
     <ClInclude Include="Serialization.h" />
     <ClInclude Include="Translation.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A236F69D-8FF9-4491-AC5F-45BF49448BBE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -293,6 +300,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_1_10_163</TargetName>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

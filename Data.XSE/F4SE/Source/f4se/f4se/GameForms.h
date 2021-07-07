@@ -38,7 +38,7 @@ extern RelocAddr <_LookupFormByID> LookupFormByID;
 extern RelocPtr <IFormFactory*> g_formFactoryList;
 
 /**** form types ***************************************************************
-*	
+*
 *
 *	Code	id	name
 	NONE	0
@@ -807,7 +807,7 @@ public:
 		float		unk0C;				// 0C
 		float		unk10;				// 10
 		SInt32		unk14;				// 14 - 0xFFFFFFFF
-		UInt32		unk18;				// 18 
+		UInt32		unk18;				// 18
 		UInt32		unk1C;				// 1C
 	};
 
@@ -949,7 +949,7 @@ public:
 	TESFullName				fullName;		// 20
 	BGSModelMaterialSwap	materialSwap;	// 30
 
-	enum 
+	enum
 	{
 		kFlagPlayable	= 1 << 0,
 		kFlagMale		= 1 << 1,
@@ -1014,7 +1014,7 @@ public:
 	float					unkC4;
 	float					unkC8;
 	float					unkCC;
-	UInt32					unk0D0; 
+	UInt32					unk0D0;
 	UInt32					pad0D4;
 	ActorValueInfo*			actorValInfoD8;
 	BGSProjectile*			projectileE0;
@@ -1033,7 +1033,7 @@ public:
 	UInt64					unk130[4];
 	TESImageSpaceModifier*	spaceModifier150; // 150
 	BGSPerk*				perk158;
-	UInt64					unk160;	// initialized to 1		
+	UInt64					unk160;	// initialized to 1
 	UInt64					unk168[3];
 	UInt64					unk180;
 	UInt32					unk188;
@@ -1236,25 +1236,25 @@ public:
 		{
 			union
 			{
-				struct 
+				struct
 				{
 					float	v1;
 					float	v2;
 				} f;
 
-				struct 
+				struct
 				{
 					UInt32	v1;
 					UInt32	v2;
 				} i;
 
-				struct 
+				struct
 				{
 					UInt32	formId;
 					float	v2;
 				} ff;
 
-				struct 
+				struct
 				{
 					UInt32	formId;
 					UInt32	v2;
@@ -1291,7 +1291,7 @@ public:
 				kOpFlag_Set_Float = kOpFlag_Set,
 				kOpFlag_Add_Float = (kOpFlag_Add | kOpFlag_Set),
 				kOpFlag_Mul_Add_Float = (kOpFlag_Mul | kOpFlag_Set),
-				
+
 				kOpFlag_Set_Form_Float = (kOpFlag_Dual | kOpFlag_Form),
 				kOpFlag_Add_Form_Float = (kOpFlag_Add | kOpFlag_Dual | kOpFlag_Form),
 				kOpFlag_Mul_Add_Form_Float = (kOpFlag_Mul | kOpFlag_Dual | kOpFlag_Form)
@@ -1427,8 +1427,8 @@ public:
 
 	BGSLocation*			parent;			// 050
 	UInt64					unk58;			// 058
-	BGSMusicType*			musicType;		// 060 
-	BGSEncounterZone*		encounterZone;	// 068 
+	BGSMusicType*			musicType;		// 060
+	BGSEncounterZone*		encounterZone;	// 068
 	UInt32					unk70;			// 070
 	float					worldRadius;	// 074
 	float					unk78;	// init to 1.0
@@ -1774,8 +1774,8 @@ class TESQuest : public BGSStoryManagerTreeForm
 {
 public:
 
-	enum { kTypeID = kFormType_QUST };	
-	
+	enum { kTypeID = kFormType_QUST };
+
 	TESFullName	fullName;	// 28
 	UInt64	unk38[(0xF0 - 0x38) >> 3];	// 038
 	UInt32	unkF0;		// 0F0

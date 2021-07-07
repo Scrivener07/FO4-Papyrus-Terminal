@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PapyrusText.cpp">
+      <Filter>Holotape\Papyrus</Filter>
+    </ClCompile>
+    <ClCompile Include="PapyrusKernel.cpp">
+      <Filter>Holotape\Papyrus</Filter>
+    </ClCompile>
+    <ClCompile Include="HolotapeProgram.cpp">
+      <Filter>Holotape</Filter>
+    </ClCompile>
+    <ClCompile Include="INV.cpp">
+      <Filter>Holotape</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="PapyrusText.h">
+      <Filter>Holotape\Papyrus</Filter>
+    </ClInclude>
+    <ClInclude Include="PapyrusKernel.h">
+      <Filter>Holotape\Papyrus</Filter>
+    </ClInclude>
+    <ClInclude Include="HolotapeProgram.h">
+      <Filter>Holotape</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Holotape</Filter>
+    </ClInclude>
+    <ClInclude Include="INV.h">
+      <Filter>Holotape</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Holotape">
+      <UniqueIdentifier>{1be79d55-3259-46b3-925b-62a38026fe62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Holotape\Papyrus">
+      <UniqueIdentifier>{547a4940-6790-42a0-ab32-e6bd829f700d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

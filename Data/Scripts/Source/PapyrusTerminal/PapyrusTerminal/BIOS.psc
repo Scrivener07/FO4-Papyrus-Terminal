@@ -7,47 +7,100 @@ Scriptname PapyrusTerminal:BIOS extends PapyrusTerminal:KERNAL Hidden
 ; custom scripting by niston & Scrivener07
 
 
+Actor Player
+
+; Holotape
+string IDENTIFIER_VALUE = "PapyrusTerminal:Identifier" const
+
+; Menus
+string TERMINAL_MENUNAME = "TerminalHolotapeMenu" const
+string PIPBOY_MENUNAME = "PipboyHolotapeMenu" const
+
+; Menu Target
+string Property FlashMenu Hidden
+	{Returns the current menu name which supports either Terminals or Pipboys.
+	When neither menu is open, an empty string is returned.}
+	string Function Get()
+		If (UI.IsMenuOpen(TERMINAL_MENUNAME))
+			return TERMINAL_MENUNAME
+		ElseIf (UI.IsMenuOpen(PIPBOY_MENUNAME))
+			return PIPBOY_MENUNAME
+		Else
+			return ""
+		EndIf
+	EndFunction
+EndProperty
+
+
+; Fields
+;---------------------------------------------
 
 ; internal constants, do not mess with
 string TerminalReadyEvent = "PapyrusTerminal:ReadyEvent" const
 string TerminalShutdownEvent = "PapyrusTerminal:ShutdownEvent" const
 string ReadAsyncCancelledEvent = "PapyrusTerminal:ReadAsyncCancelledEvent" const
 string ReadAsyncResultEvent = "PapyrusTerminal:ReadAsyncResultEvent" const
-string FLASH_MENUNAME = "TerminalHolotapeMenu" const
+
+; read mode
 int READMODE_NONE = 0 const
 int READMODE_LINE_SYNC = 1 const
 int READMODE_LINE_ASYN = 2 const
 int READMODE_KEY_SYNC = 3 const
 int READMODE_KEY_ASYN = 4 const
-int property ALIGNMENT_LEFT = 0 auto const hidden
-int property ALIGNMENT_CENTER = 1 auto const hidden
-int property ALIGNMENT_RIGHT = 2 auto const hidden
-float SYNCREAD_WAIT_INTERVAL = 0.2 const
+
+; alignment
+int Property ALIGNMENT_LEFT = 0 Auto Const Hidden
+int Property ALIGNMENT_CENTER = 1 Auto Const Hidden
+int Property ALIGNMENT_RIGHT = 2 Auto Const Hidden
 
 ; ReadLine related vars
+float SYNCREAD_WAIT_INTERVAL = 0.2 const
 int readMode = 0
-Bool readSyncCompleteFlag = false
+bool readSyncCompleteFlag = false
 string readAsyncBuffer = ""
 
-; gets set to true upon receiving OnTerminalShutdown event.
-Bool isShuttingDown = false
+; get or set to true upon receiving OnTerminalShutdown event.
+bool isShuttingDown = false
 
-Bool Property TerminalShutdown Hidden
-	Bool Function Get()
-		Return isShuttingDown
+
+bool Property TerminalShutdown Hidden
+	bool Function Get()
+		return isShuttingDown
 	EndFunction
 EndProperty
 
 
+; Events
+;---------------------------------------------
+
 ; Lifecycle management
 
-Event OnInit()	
-	Debug.Trace(Self + ": DEBUG - Papyrus Terminal holotape initialized.")
+Event OnInit()
+	Debug.TraceSelf(self, "OnInit", "ctor")
+	Player = Game.GetPlayer()
+	RegisterForMenuOpenCloseEvent(PIPBOY_MENUNAME)
 EndEvent
 
+
+Event OnMenuOpenCloseEvent(string menuName, bool opening)
+	Debug.TraceSelf(self, "OnMenuOpenCloseEvent", "menuName:"+menuName + ", opening:"+opening)
+
+	If (menuName == PIPBOY_MENUNAME)
+		If (opening)
+
+			string id = UI.Get(menuName, "root1.Identifier")
+
+			If (id == IDENTIFIER_VALUE)
+				OnHolotapePlay(Player) ; <-- Player == Terminal
+			EndIf
+		EndIf
+	EndIf
+EndEvent
+
+
 Event OnHolotapePlay(ObjectReference refTerminal)
-	Debug.Trace(Self + ": DEBUG - OnHolotapePlay event recevied.")	
-	
+	Debug.TraceSelf(self, "OnHolotapePlay", "refTerminal:"+refTerminal)
+
 	; initialize internal vars
 	readMode = READMODE_NONE
 	readSyncCompleteFlag = false;
@@ -60,37 +113,20 @@ Event OnHolotapePlay(ObjectReference refTerminal)
 
 	; ready for text replacement tokens to be set, notify derived class
 	OnPapyrusTerminalInitialize(refTerminal)
+
+	; vanilla menus
+	RegisterForMenuOpenCloseEvent(TERMINAL_MENUNAME) ; TODO: This is not needed beyond debug for now.
+	RegisterForMenuOpenCloseEvent(PIPBOY_MENUNAME)
 EndEvent
 
-; TESTING
-
-Event OnActivate(ObjectReference refActivatedBy)
-	Debug.Trace(Self + ": OnActivate(" + refActivatedBy + ") event received.")
-EndEvent
-
-Event OnEquipped(Actor actEquippedBy)
-	 Debug.Trace(Self + ": OnEquipped(" + actEquippedBy + ") event received.")
-EndEvent
-
-Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-	If (akSender == Game.GetPlayer())
-		Debug.Trace(Self + ": Player.OnItemEquipped(<Player>, " + akBaseObject + ", " + akReference + ") event received.")	
-		If (akReference == Self)
-			Debug.Trace(Self + ": We were just equipped.")
-		EndIf
-	EndIf
-EndEvent
-
-Event OnHolotapeChatter(String strChatter, Float fChatter)
-	Debug.Trace(Self + ": OnHolotapeChatter(" + strChatter + ", " + fChatter + ") received.")
-EndEvent
 
 Function OnPipboyReady()
-	Debug.Trace(Self + ": OnPipBoyReady() event received.")
+	Debug.Trace(self + ": OnPipBoyReady() event received.")
 EndFunction
 
-Function OnTerminalReady()	
-	Debug.Trace(Self + ": DEBUG - OnTerminalReady event received.")
+
+Function OnTerminalReady()
+	Debug.Trace(self + ": DEBUG - OnTerminalReady event received.")
 
 	; unregister OnTerminalReady events
 	UnRegisterForExternalEvent(TerminalReadyEvent)
@@ -99,79 +135,96 @@ Function OnTerminalReady()
 	OnPapyrusTerminalReady()
 EndFunction
 
-Function OnTerminalShutdown()	
-	Debug.Trace(Self + ": DEBUG - OnTerminalShutdown event received.")	
+
+Function OnTerminalShutdown()
+	Debug.Trace(self + ": DEBUG - OnTerminalShutdown event received.")
 
 	; set shutdown flag
 	isShuttingDown = true
 
 	; unregister for all events
 	UnregisterForAllEvents()
-	
+
 	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)
 		readSyncCompleteFlag = false
-	
+
 	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; send async read cancel to derived class
 		OnPapyrusTerminalReadAsyncCancelled()
-	
+
 	EndIf
-	
+
 	; clear readmode
 	readMode = READMODE_NONE
-	
+
 	; notify derived class that terminal has shut down
 	OnPapyrusTerminalShutdown()
 EndFunction
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ; terminal related functions
+;---------------------------------------------
 
-; Number of text rows in the current Terminal display mode
-Int Property TerminalRows
-	Int Function Get()
+int Property TerminalRows
+	{Number of text rows in the current Terminal display mode}
+	int Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.TerminalLines") as Int
+			return UI.Get(FlashMenu, "root1.TerminalLines") as int
 		Else
 			return 0
 		EndIf
 	EndFunction
 EndProperty
 
-; Number of text columns in the current Terminal display mode
-Int Property TerminalColumns
-	Int Function Get()
+int Property TerminalColumns
+	{Number of text columns in the current Terminal display mode}
+	int Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.TerminalColumns") as Int
+			return UI.Get(FlashMenu, "root1.TerminalColumns") as int
 		Else
 			return 0
 		EndIf
 	EndFunction
 EndProperty
 
-; Enable/disable leaving Terminal by pressing TAB key (useful for making menus with submenus, or when you want to react to TAB)
-Bool Property QuitOnTABEnabled Hidden
-	Function Set(Bool value)
+
+bool Property QuitOnTABEnabled Hidden
+	{Enable or disable leaving Terminal by pressing TAB key.
+	 This is useful for making menus with submenus, or when you want to react to TAB.}
+	Function Set(bool value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.QuitOnTABEnable", value)
+			UI.Set(FlashMenu, "root1.QuitOnTABEnable", value)
 		EndIf
 	EndFunction
-	Bool Function Get()
+	bool Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.QuitOnTABEnable") as Bool
+			return UI.Get(FlashMenu, "root1.QuitOnTABEnable") as bool
 		Else
 			return false
 		EndIf
 	EndFunction
 EndProperty
 
+
 ; End the terminal session (exit holotape)
 Function End()
 	If (!isShuttingDown)
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = true
-		UI.Invoke(FLASH_MENUNAME, "root1.End", args)
+		UI.Invoke(FlashMenu, "root1.End", args)
 	EndIf
 EndFunction
 
@@ -180,86 +233,86 @@ EndFunction
 ; screen functions
 
 ; Print aligned fixed-width field (no LF appended)
-Function PrintField(String fieldText, Int fieldSize, Int alignmentType, String paddingChar = " ", Bool noElipsis = false)
+Function PrintField(string fieldText, int fieldSize, int alignmentType, string paddingChar = " ", bool noElipsis = false)
 	If (!isShuttingDown)
 		If ((fieldSize + CursorPositionColumn) > TerminalColumns)
 			; field size may not exceed terminal width
 			fieldSize = TerminalColumns - (CursorPositionColumn - 1)
 		EndIf
-		Var[] args = new Var[5]
+		var[] args = new var[5]
 		args[0] = fieldText
 		args[1] = fieldSize
 		args[2] = alignmentType
 		args[3] = paddingChar
 		args[4] = noElipsis
-		UI.Invoke(FLASH_MENUNAME, "root1.PrintFieldPapyrus", args)
+		UI.Invoke(FlashMenu, "root1.PrintFieldPapyrus", args)
 	EndIf
 EndFunction
 
 ; Print line to screen (appends LF at the end)
-Function PrintLine(String lineToPrint = "")
+Function PrintLine(string lineToPrint = "")
 	If (!isShuttingDown)
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = lineToPrint
-		UI.Invoke(FLASH_MENUNAME, "root1.PrintLinePapyrus", args)
+		UI.Invoke(FlashMenu, "root1.PrintLinePapyrus", args)
 	EndIf
 EndFunction
 
 ; Print characters to screen
-Function Print(String charsToPrint)
+Function Print(string charsToPrint)
 	If (!isShuttingDown)
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = charsToPrint
-		UI.Invoke(FLASH_MENUNAME, "root1.PrintPapyrus", args)
+		UI.Invoke(FlashMenu, "root1.PrintPapyrus", args)
 	EndIf
 EndFunction
 
 ; Clear the screen
 Function Clear()
 	If (!isShuttingDown)
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = false
-		UI.Invoke(FLASH_MENUNAME, "root1.ClearScreenPapyrus", args)
+		UI.Invoke(FlashMenu, "root1.ClearScreenPapyrus", args)
 	EndIf
 EndFunction
 
 ; Clear the screen and move cursor to home position (1, 1)
 Function ClearHome()
 	If (!isShuttingDown)
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = true
-		UI.Invoke(FLASH_MENUNAME, "root1.ClearScreenPapyrus", args)
+		UI.Invoke(FlashMenu, "root1.ClearScreenPapyrus", args)
 	EndIf
 EndFunction
 
 
 
 ; Enable/disable reverse (inverse) text mode
-Bool Property ReverseMode Hidden
-	Function Set(Bool value)
+bool Property ReverseMode Hidden
+	Function Set(bool value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.ReverseMode", value)
+			UI.Set(FlashMenu, "root1.ReverseMode", value)
 		EndIf
 	EndFunction
-	Bool Function Get()
+	bool Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.ReverseMode") as Bool
+			return UI.Get(FlashMenu, "root1.ReverseMode") as bool
 		Else
 			return false
 		EndIf
-	EndFunction	
+	EndFunction
 EndProperty
 
 ; Enable/disable insert mode (insert key toggle)
-Bool Property InsertMode Hidden
-	Function Set(Bool value)
+bool Property InsertMode Hidden
+	Function Set(bool value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.InsertMode", value)
+			UI.Set(FlashMenu, "root1.InsertMode", value)
 		EndIf
 	EndFunction
-	Bool Function Get()
+	bool Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.InsertMode") as Bool
+			return UI.Get(FlashMenu, "root1.InsertMode") as bool
 		Else
 			return false
 		EndIf
@@ -267,32 +320,32 @@ Bool Property InsertMode Hidden
 EndProperty
 
 ; Enable/disable Terminal local echo (print typed keys to screen)
-Bool Property LocalEcho Hidden
-	Function Set(Bool value)
+bool Property LocalEcho Hidden
+	Function Set(bool value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.ScreenEchoEnable", value)
+			UI.Set(FlashMenu, "root1.ScreenEchoEnable", value)
 		EndIf
 	EndFunction
-	Bool Function Get()
+	bool Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.ScreenEchoEnable") as Bool
+			return UI.Get(FlashMenu, "root1.ScreenEchoEnable") as bool
 		Else
 			return false
 		EndIf
 	EndFunction
 EndProperty
 
-String Property PapyrusStringEscapeSequence Hidden
-	Function Set(String value)
+string Property PapyrusStringEscapeSequence Hidden
+	Function Set(string value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.PapyrusStringEscapeSequence", value)
+			UI.Set(FlashMenu, "root1.PapyrusStringEscapeSequence", value)
 		EndIf
 	EndFunction
-	String Function Get()
+	string Function Get()
 		If (!isShuttingDown)
-			Return UI.Get(FLASH_MENUNAME, "root1.PapyrusStringEscapeSequence") as String
+			return UI.Get(FlashMenu, "root1.PapyrusStringEscapeSequence") as string
 		Else
-			Return ""
+			return ""
 		EndIf
 	EndFunction
 EndProperty
@@ -301,31 +354,31 @@ EndProperty
 ; cursor functions
 
 ; Move the cursor by row and column number (top left is 1,1)
-Function CursorMove(Int row, Int column)
+Function CursorMove(int row, int column)
 	If (isShuttingDown)
 		return
 	EndIf
 
-	Var[] args = new Var[2]
+	var[] args = new var[2]
 	args[0] = row
 	args[1] = column
-	UI.Invoke(FLASH_MENUNAME, "root1.CursorMovePapyrus", args)
+	UI.Invoke(FlashMenu, "root1.CursorMovePapyrus", args)
 EndFunction
 
 ; Move the cursor by character index (zero based "screen memory" address, top left is 0)
-Function CursorMoveByIndex(Int index)
-	If (isShuttingDown)		
-		Var[] args = new Var[1]
+Function CursorMoveByIndex(int index)
+	If (isShuttingDown)
+		var[] args = new var[1]
 		args[0] = index
-		UI.Invoke(FLASH_MENUNAME, "root1.CursorMoveByIndex", args)
+		UI.Invoke(FlashMenu, "root1.CursorMoveByIndex", args)
 	EndIf
 EndFunction
 
 ; Number of screen row the cursor is currently positioned at (first row is 1)
-Int Property CursorPositionRow
-	Int Function Get()
+int Property CursorPositionRow
+	int Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.CursorCurrentLine") as Int
+			return UI.Get(FlashMenu, "root1.CursorCurrentLine") as int
 		Else
 			return 0
 		EndIf
@@ -333,10 +386,10 @@ Int Property CursorPositionRow
 EndProperty
 
 ; Number of screen column the cursor is currently positioned at (first column is 1)
-Int Property CursorPositionColumn
-	Int Function Get()
+int Property CursorPositionColumn
+	int Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.CursorCurrentColumn") as Int
+			return UI.Get(FlashMenu, "root1.CursorCurrentColumn") as int
 		Else
 			return 0
 		EndIf
@@ -344,10 +397,10 @@ Int Property CursorPositionColumn
 EndProperty
 
 ; Character index of current cursor position (zero based "screen memory" address, top left is 0)
-Int Property CursorPositionIndex
-	Int Function Get()
+int Property CursorPositionIndex
+	int Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.CursorCurrentIndex") as Int
+			return UI.Get(FlashMenu, "root1.CursorCurrentIndex") as int
 		Else
 			return 0
 		EndIf
@@ -355,15 +408,15 @@ Int Property CursorPositionIndex
 EndProperty
 
 ; Enable/disable visible cursor rectangle on Terminal screen
-Bool Property CursorEnabled Hidden
-	Function Set(Bool value)
+bool Property CursorEnabled Hidden
+	Function Set(bool value)
 		If (!isShuttingDown)
-			UI.Set(FLASH_MENUNAME, "root1.CursorEnabled", value)
+			UI.Set(FlashMenu, "root1.CursorEnabled", value)
 		EndIf
-	EndFunction	
-	Bool Function Get()
+	EndFunction
+	bool Function Get()
 		If (!isShuttingDown)
-			return UI.Get(FLASH_MENUNAME, "root1.CursorEnabled") as Bool
+			return UI.Get(FlashMenu, "root1.CursorEnabled") as bool
 		EndIf
 	EndFunction
 EndProperty
@@ -374,7 +427,7 @@ EndProperty
 
 ; Begin asynchronous ReadLine operation. Completes on ENTER keypress by user. Cancellable by calling ReadAsyncCancel().
 ; Operation will generate OnPapyrusTerminalReadAsyncCompleted event callback on completion.
-Bool Function ReadLineAsyncBegin(Int maxLength = 0)
+bool Function ReadLineAsyncBegin(int maxLength = 0)
 	If (isShuttingDown)
 		return false
 	EndIf
@@ -382,28 +435,28 @@ Bool Function ReadLineAsyncBegin(Int maxLength = 0)
 
 		; set async readline mode
 		readMode = READMODE_LINE_ASYN
-		
+
 		; clear async read buffer
 		readAsyncBuffer = ""
 
 		; register for terminal async read result and cancel events
-		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult")		
+		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult")
 
 		; invoke async ReadLine on Terminal
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = maxLength
-		return UI.Invoke(FLASH_MENUNAME, "root1.ReadLineAsyncBeginPapyrus", args) as Bool
-	
+		return UI.Invoke(FlashMenu, "root1.ReadLineAsyncBeginPapyrus", args) as bool
+
 	Else
 		; read operation in progress
-		Debug.Trace(Self + ": ERROR - ReadLineAsyncBegin() called, but a Read operation is already in progress.")
+		Debug.Trace(self + ": ERROR - ReadLineAsyncBegin() called, but a Read operation is already in progress.")
 		return false;
 
 	EndIf
 EndFunction
 
 ; Begin asynchronous ReadKey operation. Completes as user depresses a key. Cancellable by calling ReadAsyncCancel().
-Bool Function ReadKeyAsyncBegin()
+bool Function ReadKeyAsyncBegin()
 	If (isShuttingDown)
 		return false
 	EndIf
@@ -420,13 +473,13 @@ Bool Function ReadKeyAsyncBegin()
 		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult")
 
 		; invoke on Terminal
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = ""
-		return UI.Invoke(FLASH_MENUNAME, "root1.ReadKeyAsyncBegin", args) as Bool
-	
+		return UI.Invoke(FlashMenu, "root1.ReadKeyAsyncBegin", args) as bool
+
 	Else
 		; read operation in progress
-		Debug.Trace(Self + ": ERROR - ReadKeyAsyncBegin() called, but a Read operation is already in progres.")
+		Debug.Trace(self + ": ERROR - ReadKeyAsyncBegin() called, but a Read operation is already in progres.")
 		return false;
 
 	EndIf
@@ -438,26 +491,26 @@ Function ReadAsyncCancel()
 		return
 	EndIf
 
-	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)		
+	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; unregister for terminal async read result event
 		UnRegisterForExternalEvent(ReadAsyncResultEvent)
-		
+
 		; register for terminal async read cancelled event
 		RegisterForExternalEvent(ReadAsyncCancelledEvent, "OnReadAsyncCancelled")
 
 		; invoke ReadLineAsyncCancel on Terminal
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = ""
-		UI.Invoke(FLASH_MENUNAME, "root1.ReadAsyncCancel", args)
+		UI.Invoke(FlashMenu, "root1.ReadAsyncCancel", args)
 
 	Else
-		Debug.Trace(Self + ": WARNING - ReadAsyncCancel() called, but no async Read operation was in progress.")
+		Debug.Trace(self + ": WARNING - ReadAsyncCancel() called, but no async Read operation was in progress.")
 
 	EndIf
 EndFunction
 
 ; Synchronously read a line (ends in ENTER keypress) from the Terminal
-String Function ReadLine(Int maxLength = 0)
+string Function ReadLine(int maxLength = 0)
 	If (isShuttingDown)
 		return "";
 	EndIf
@@ -470,37 +523,37 @@ String Function ReadLine(Int maxLength = 0)
 		; clear readAsync input buffer and sync read complete flag
 		readSyncCompleteFlag = false
 		readAsyncBuffer = ""
-		
+
 		; register for async result event
 		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult");
 
 		; invoke ReadLineAsync on Terminal
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = maxLength
-		UI.Invoke(FLASH_MENUNAME, "root1.ReadLineAsyncBeginPapyrus", args)	
+		UI.Invoke(FlashMenu, "root1.ReadLineAsyncBeginPapyrus", args)
 
 		; wait for async result
 		While (IsBoundGameObjectAvailable() &&  readMode == READMODE_LINE_SYNC && !readSyncCompleteFlag && !isShuttingDown)
-			;Debug.Trace(Self + ": DEBUG - [ReadLine] Waiting for OnReadAsyncResult")	
-		
+			;Debug.Trace(self + ": DEBUG - [ReadLine] Waiting for OnReadAsyncResult")
+
 			; WARNING: DO NOT use Utility.Wait() in your Papyrus Terminal scripts!
 			; Doing so will suspend execution of your script, because the Terminal Menu is open.
 			; Use Utility.WaitMenuMode() instead.
-			
+
 			Utility.WaitMenuMode(SYNCREAD_WAIT_INTERVAL)
 		EndWhile
 
 		; return async input buffer contents
 		return readAsyncBuffer
 	Else
-		Debug.Trace(Self + ": ERROR - ReadLine() called, but a Read operation is already in progress.")		
+		Debug.Trace(self + ": ERROR - ReadLine() called, but a Read operation is already in progress.")
 		return ""
 	EndIf
 EndFunction
 
-String Function ReadKey()
+string Function ReadKey()
 	If (isShuttingDown)
-		Return "";
+		return "";
 	EndIf
 	If (readMode == READMODE_NONE)
 		; set read mode synchronous key
@@ -509,81 +562,81 @@ String Function ReadKey()
 		; clear readAsync input buffer and sync read complete flag
 		readSyncCompleteFlag = false
 		readAsyncBuffer = ""
-		
+
 		; register for async result event
 		RegisterForExternalEvent(ReadAsyncResultEvent, "OnReadAsyncResult");
 
 		; invoke ReadLineAsync on Terminal
-		Var[] args = new Var[1]
+		var[] args = new var[1]
 		args[0] = ""
-		Bool readAsyncBeginResult = UI.Invoke(FLASH_MENUNAME, "root1.ReadKeyAsyncBegin", args) as Bool
+		bool readAsyncBeginResult = UI.Invoke(FlashMenu, "root1.ReadKeyAsyncBegin", args) as bool
 		If (readAsyncBeginResult)
 			; wait for read async result
 			While (IsBoundGameObjectAvailable() &&  readMode == READMODE_KEY_SYNC && !readSyncCompleteFlag && !isShuttingDown)
-				;Debug.Trace(Self + ": DEBUG - [ReadKey] Waiting for OnReadAsyncResult")	
-			
+				;Debug.Trace(self + ": DEBUG - [ReadKey] Waiting for OnReadAsyncResult")
+
 				; ##### WARNING: DO NOT use Utility.Wait() in your Papyrus Terminal scripts! #####
 				; Doing so will suspend execution of your script, because the Terminal Menu is open.
 				; Use Utility.WaitMenuMode() instead.
-				
+
 				Utility.WaitMenuMode(SYNCREAD_WAIT_INTERVAL)
 			EndWhile
 
 			If (readSyncCompleteFlag)
 				; completed, return async input buffer contents
-				Return readAsyncBuffer
+				return readAsyncBuffer
 			Else
 				; aborted, return empty string
 				return ""
 			EndIf
 		Else
-			Debug.Trace(Self + ": ERROR - ReadKeyAsyncBegin call failed.")
+			Debug.Trace(self + ": ERROR - ReadKeyAsyncBegin call failed.")
 			return ""
-		EndIf	
+		EndIf
 	Else
-		Debug.Trace(Self + ": ERROR - ReadKey() called, but a Read operation is already in progress.")		
-		return ""		
+		Debug.Trace(self + ": ERROR - ReadKey() called, but a Read operation is already in progress.")
+		return ""
 	EndIf
 EndFunction
 
 ; Result event handler for Terminal ReadLine operations
 ; The Fash Terminal itself can only do async Reads, but the API provides synchronous wrappers ReadKey() and ReadLine()
 Function OnReadAsyncResult(string readLineBuffer)
-	Debug.Trace(Self + ": DEBUG - OnReadAsyncResult event received.") ;" readLineBuffer=" + readLineBuffer)
-	
-	; unregister for async result event
-	UnRegisterForExternalEvent(ReadAsyncResultEvent)	
+	Debug.Trace(self + ": DEBUG - OnReadAsyncResult event received.") ;" readLineBuffer=" + readLineBuffer)
 
-	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)		
+	; unregister for async result event
+	UnRegisterForExternalEvent(ReadAsyncResultEvent)
+
+	If (readMode == READMODE_LINE_SYNC || readMode == READMODE_KEY_SYNC)
 		; synchronous Read operation has completed, fill async read buffer from event parameter
 		readAsyncBuffer = readLineBuffer
  		; set sync read complete flag
 		readSyncCompleteFlag = true
-		; clear readmode		
+		; clear readmode
 		readMode = READMODE_NONE
 
-	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN) 		
+	ElseIf (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; asynchronous Read operation has completed, signal derived class
 		OnPapyrusTerminalReadAsyncCompleted(readLineBuffer)
 		; reset readmode
 		readMode = READMODE_NONE
 
 	Else
-		Debug.Trace(Self + ": WARNING - OnReadAsyncResult event received, but no Read operation was in progress.");
-	EndIf	
+		Debug.Trace(self + ": WARNING - OnReadAsyncResult event received, but no Read operation was in progress.");
+	EndIf
 EndFunction
 
 ; Result event handler for async Read cancellation
 Function OnReadAsyncCancelled()
-	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)		
+	If (readMode == READMODE_LINE_ASYN || readMode == READMODE_KEY_ASYN)
 		; unregister for async result and cancelled events
 		UnRegisterForExternalEvent(ReadAsyncResultEvent)
 		UnRegisterForExternalEvent(ReadAsyncCancelledEvent)
-		
+
 		; clear async read mode
 		readMode = READMODE_NONE
-		
-		; notify derived class 
+
+		; notify derived class
 		OnPapyrusTerminalReadAsyncCancelled()
 	EndIf
 EndFunction
@@ -593,177 +646,177 @@ Function Sleep(Float secondsToSleep)
 	Utility.WaitMenuMode(secondsToSleep)
 EndFunction
 
-Function Dispatch(String functionName, Var arg1 = none, Var arg2 = none, Var arg3 = none, Var arg4 = none, Var arg5 = none, Var arg6 = none)
+Function Dispatch(string functionName, var arg1 = none, var arg2 = none, var arg3 = none, var arg4 = none, var arg5 = none, var arg6 = none)
 	If (functionName == "")
-		Debug.Trace(Self + ": ERROR - AsyncDispatch() called with no function name.")
-		Return
+		Debug.Trace(self + ": ERROR - AsyncDispatch() called with no function name.")
+		return
 	EndIf
-	Var[] callArgs = new var[0]
+	var[] callArgs = new var[0]
 	AddArg(callArgs, arg1)
 	AddArg(callArgs, arg2)
 	AddArg(callArgs, arg3)
 	AddArg(callArgs, arg4)
 	AddArg(callArgs, arg5)
 	AddArg(callArgs, arg6)
-	Debug.Trace(Self + ": DEBUG - Dispatch(" + functionName + ", <" + callArgs.Length + " parameters>) called.")
+	Debug.Trace(self + ": DEBUG - Dispatch(" + functionName + ", <" + callArgs.Length + " parameters>) called.")
 	If (!TerminalShutdown)
 		CallFunctionNoWait(functionName, callArgs)
 	EndIf
 EndFunction
 
-Function AddArg(Var[] argsArray, var varArg)
+Function AddArg(var[] argsArray, var varArg)
 	If ((varArg + "") == "None")
-		Return
+		return
 	EndIf
 
 	; TESTING THIS
 	argsArray.Add(varArg)
-	Return
+	return
 
-	;/ 	If (varArg is String)
-		argsArray.Add(varArg as String)
-		Debug.Trace(Self + ": DEBUG - Argument (" + varArg + ") added as String")
-	ElseIf (varArg is Int)
-		argsArray.Add(varArg as Int)
-		Debug.Trace(Self + ": DEBUG - Argument (" + varArg + ") added as Int")
+	;/ 	If (varArg is string)
+		argsArray.Add(varArg as string)
+		Debug.Trace(self + ": DEBUG - Argument (" + varArg + ") added as string")
+	ElseIf (varArg is int)
+		argsArray.Add(varArg as int)
+		Debug.Trace(self + ": DEBUG - Argument (" + varArg + ") added as int")
 	ElseIf (varArg is Float)
 		argsArray.Add(varArg as Float)
-		Debug.Trace(Self + ": DEBUG - Argument (" + varArg + ") added as Float")
+		Debug.Trace(self + ": DEBUG - Argument (" + varArg + ") added as Float")
 	ElseIf (varArg is Form)
 		argsArray.Add(varArg as Form)
-		Debug.Trace(Self + ": DEBUG - Argument (" + varArg + ") added as Form")
+		Debug.Trace(self + ": DEBUG - Argument (" + varArg + ") added as Form")
 	ElseIf (varArg is ObjectReference)
-		Debug.Trace(Self + ": DEBUG - Argument (" + varArg + ") added as ObjectReference")
+		Debug.Trace(self + ": DEBUG - Argument (" + varArg + ") added as ObjectReference")
 		argsArray.Add(varArg as ObjectReference)
-	EndIf /;	
+	EndIf /;
 EndFunction
 
 
-; String Utility Functions
-String[] Function StringSplit(string line, string separator = " ")
-	If (isShuttingDown) 
-		string[] retVal = new string[0] 
+; string Utility Functions
+string[] Function StringSplit(string line, string separator = " ")
+	If (isShuttingDown)
+		string[] retVal = new string[0]
 		return retVal
 	EndIf
 
-	Var[] args = new Var[2]
+	var[] args = new var[2]
 	args[0] = line
 	args[1] = separator
-	Return Utility.VarToVarArray(UI.Invoke(FLASH_MENUNAME, "root1.StringSplitPapyrus", args)) as string[]
+	return Utility.VarToVarArray(UI.Invoke(FlashMenu, "root1.StringSplitPapyrus", args)) as string[]
 EndFunction
 
-String Function StringCharAt(String line, Int charIndex)
+string Function StringCharAt(string line, int charIndex)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Var[] args = new Var[2]
+	var[] args = new var[2]
 	args[0] = line
 	args[1] = charIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringCharAtPapyrus", args) as String
+	return UI.Invoke(FlashMenu, "root1.StringCharAtPapyrus", args) as string
 EndFunction
 
-Int Function StringCharCodeAt(String line, Int charIndex)
+int Function StringCharCodeAt(string line, int charIndex)
 	If (isShuttingDown)
-		Return -1
+		return -1
 	EndIf
 
-	Var[] args = new Var[2]
+	var[] args = new var[2]
 	args[0] = line
 	args[1] = charIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringCharCodeAtPapyrus", args) as Int	
+	return UI.Invoke(FlashMenu, "root1.StringCharCodeAtPapyrus", args) as int
 EndFunction
 
-Int Function StringIndexOf(String line, String part, Int startIndex)
+int Function StringIndexOf(string line, string part, int startIndex)
 	If (isShuttingDown)
-		Return -1
+		return -1
 	EndIf
 
-	Var[] args = new Var[3]
+	var[] args = new var[3]
 	args[0] = line
 	args[1] = part
 	args[2] = startIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringIndexOfPapyrus", args) as Int		
+	return UI.Invoke(FlashMenu, "root1.StringIndexOfPapyrus", args) as int
 EndFunction
 
-Int Function StringLastIndexOf(String line, String part, Int priorToIndex = -1)
+int Function StringLastIndexOf(string line, string part, int priorToIndex = -1)
 	If (isShuttingDown)
-		Return -1
+		return -1
 	EndIf
 
-	Var[] args = new Var[3]
+	var[] args = new var[3]
 	args[0] = line
 	args[1] = part
 	args[2] = priorToIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringLastIndexOfPapyrus", args) as Int		
+	return UI.Invoke(FlashMenu, "root1.StringLastIndexOfPapyrus", args) as int
 EndFunction
 
-String Function StringReplace(String line, String pattern, String replacement)
+string Function StringReplace(string line, string pattern, string replacement)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Var[] args = new Var[3]
+	var[] args = new var[3]
 	args[0] = line
 	args[1] = pattern
 	args[2] = replacement
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringReplacePapyrus", args) as String
+	return UI.Invoke(FlashMenu, "root1.StringReplacePapyrus", args) as string
 EndFunction
 
-String Function StringSlice(String line, Int startIndex, Int endIndex = 0x7fffffff)
+string Function StringSlice(string line, int startIndex, int endIndex = 0x7fffffff)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Var[] args = new Var[3]
+	var[] args = new var[3]
 	args[0] = line
 	args[1] = startIndex
 	args[2] = endIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringSlicePapyrus", args) as String
+	return UI.Invoke(FlashMenu, "root1.StringSlicePapyrus", args) as string
 EndFunction
 
-String Function StringSubstring(String line, Int startIndex, Int endIndex = 0x7fffffff)
+string Function StringSubstring(string line, int startIndex, int endIndex = 0x7fffffff)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Var[] args = new Var[3]
+	var[] args = new var[3]
 	args[0] = line
 	args[1] = startIndex
 	args[2] = endIndex
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringSubstringPapyrus", args) as String
+	return UI.Invoke(FlashMenu, "root1.StringSubstringPapyrus", args) as string
 EndFunction
 
-Bool Function StringIsNumeric(String line)
+bool Function StringIsNumeric(string line)
 	If (isShuttingDown)
-		Return false
+		return false
 	EndIf
 
 	If (line == "")
-		Return false
+		return false
 	EndIf
 
-	Var[] args = new Var[1]
+	var[] args = new var[1]
 	args[0] = line
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringIsNumericPapyrus", args) as Bool
+	return UI.Invoke(FlashMenu, "root1.StringIsNumericPapyrus", args) as bool
 EndFunction
 
-String Function StringFormat(var[] lineAndArguments)
+string Function StringFormat(var[] lineAndArguments)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringFormatPapyrus", lineAndArguments) as String
+	return UI.Invoke(FlashMenu, "root1.StringFormatPapyrus", lineAndArguments) as string
 EndFunction
 
-String Function StringRepeat(String sequenceToRepeat, Int numberOfRepetitions)
+string Function StringRepeat(string sequenceToRepeat, int numberOfRepetitions)
 	If (isShuttingDown)
-		Return ""
+		return ""
 	EndIf
 
-	Var[] args = new Var[2]
+	var[] args = new var[2]
 	args[0] = sequenceToRepeat
 	args[1] = numberOfRepetitions
 
-	Return UI.Invoke(FLASH_MENUNAME, "root1.StringRepeatPapyrus")
+	return UI.Invoke(FlashMenu, "root1.StringRepeatPapyrus")
 EndFunction

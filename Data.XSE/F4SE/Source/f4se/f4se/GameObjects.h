@@ -284,7 +284,7 @@ public:
 		BGSSoundDescriptorForm		*unk28;						// 28 BGSSoundDescriptorForm *
 		BGSSoundDescriptorForm		* unk30;					// 30 BGSSoundDescriptorForm *
 		BGSSoundDescriptorForm		* unk38;					// 38 BGSSoundDescriptorForm *
-		BGSSoundDescriptorForm		* unk40;					// 40 BGSSoundDescriptorForm * 
+		BGSSoundDescriptorForm		* unk40;					// 40 BGSSoundDescriptorForm *
 		BGSSoundDescriptorForm		* unk48;					// 48 BGSSoundDescriptorForm *
 		UInt64						unk50;						// 50
 		BGSImpactDataSet			* unk58;					// 58 BGSImpactDataSet*
@@ -644,7 +644,7 @@ public:
 	UInt64						unk128;				// 128
 	UInt64						unk130;
 	UInt8						unk138;
-	UInt8						pad13C[3];		
+	UInt8						pad13C[3];
 };
 STATIC_ASSERT(sizeof(TESObjectACTI) == 0x140);
 

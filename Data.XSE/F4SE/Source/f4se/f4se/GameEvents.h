@@ -108,7 +108,7 @@ struct QuickContainerStateEvent
 
 };
 
-struct TESCombatEvent 
+struct TESCombatEvent
 {
 	TESObjectREFR	* source;	// 00
 	TESObjectREFR	* target;	// 04

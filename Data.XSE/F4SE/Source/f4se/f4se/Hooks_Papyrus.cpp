@@ -1,10 +1,8 @@
 #include "Hooks_Papyrus.h"
 #include "f4se_common/Relocation.h"
 #include "f4se_common/BranchTrampoline.h"
-
 #include "f4se/PapyrusVM.h"
 #include "f4se/PapyrusEvents.h"
-
 #include "f4se/PapyrusF4SE.h"
 #include "f4se/PapyrusForm.h"
 #include "f4se/PapyrusMath.h"
@@ -35,9 +33,7 @@
 #include "f4se/PapyrusFavoritesManager.h"
 #include "f4se/PapyrusArmorAddon.h"
 #include "f4se/PapyrusArmor.h"
-
 #include "f4se/Serialization.h"
-
 #include "xbyak/xbyak.h"
 
 RelocAddr <uintptr_t> RegisterPapyrusFunctions_Start(0x013E6BC0 + 0x461);
@@ -281,7 +277,7 @@ void Hooks_Papyrus_Commit()
 
 		g_branchTrampoline.Write5Branch(LoadRegistrationHandles.GetUIntPtr(), (uintptr_t)LoadRegistrationHandles_Hook);
 	}
-	
+
 	// revert global data hook
 	{
 		struct RevertGlobalData_Code : Xbyak::CodeGenerator {

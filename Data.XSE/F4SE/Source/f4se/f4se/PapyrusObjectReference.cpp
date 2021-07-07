@@ -347,7 +347,7 @@ namespace papyrusObjectReference {
 			for(int i = 0; i < inventory->items.count; i++) {
 				BGSInventoryItem item;
 				inventory->items.GetNthItem(i, item);
-				
+
 				results.Push(&item.form);
 			}
 
@@ -449,8 +449,8 @@ namespace papyrusObjectReference {
 					results.Push(&point);
 				}
 			}
-		}		
-		
+		}
+
 		return results;
 	}
 
@@ -480,7 +480,7 @@ namespace papyrusObjectReference {
 		if(workshopItemDefault) {
 			keyword = DYNAMIC_CAST(workshopItemDefault->form, TESForm, BGSKeyword);
 		}
-		
+
 		// No workshop keyword is bad
 		if(!keyword) {
 			return false;
@@ -506,7 +506,7 @@ namespace papyrusObjectReference {
 		BSPointerHandle<TESObjectREFR> previousWorkshop = *Workshop::hCurrentWorkshop;
 
 		*Workshop::hCurrentWorkshop = workshopRef;
-		
+
 		for(UInt32 i = 0; i < extraData->points.count; i++)
 		{
 			BSConnectPoint::Parents::ConnectPoint * connectPoint = extraData->points[i];
@@ -597,7 +597,7 @@ namespace papyrusObjectReference {
 			rootNode[i]->Visit([&](NiAVObject * object)
 			{
 				BSGeometry * geometry = object->GetAsBSGeometry();
-				if(geometry) 
+				if(geometry)
 				{
 					NiPointer<BSShaderProperty> shaderProperty = ni_cast(geometry->shaderProperty, BSShaderProperty);
 					if(shaderProperty.get())
@@ -652,7 +652,7 @@ namespace papyrusObjectReference {
 							success.emplace(std::make_pair(materialLookup, lastColorIndex));
 						}
 					}
-					
+
 				}
 				return false;
 			});
@@ -696,7 +696,7 @@ namespace papyrusObjectReference {
 			else // Use the workshop from workshop mode
 				akWorkshopRef = currentWorkshop.get();
 		}
-		
+
 		if (!akWorkshopRef)
 			return false;
 

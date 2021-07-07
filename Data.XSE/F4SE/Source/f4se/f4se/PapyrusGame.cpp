@@ -34,7 +34,7 @@ namespace papyrusGame
 		for (UInt32 i = 0; i < modCount; i++)
 		{
 			ModInfo * modInfo = (*g_dataHandler)->modList.loadedMods[i];
-			
+
 			PluginInfo info;
 			info.Set<UInt32>("index", modInfo->modIndex);
 			info.Set<BSFixedString>("name", modInfo->name);
@@ -115,7 +115,7 @@ namespace papyrusGame
 			else
 			{
 				_WARNING("SetGameSettingInt: %s is not an int", name.data);
-			}	
+			}
 		}
 		else
 		{

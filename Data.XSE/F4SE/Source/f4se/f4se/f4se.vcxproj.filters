@@ -350,6 +350,16 @@
     <None Include="PapyrusDelayFunctorsDef_Base.inl">
       <Filter>papyrus\vm</Filter>
     </None>
+    <None Include=".gitignore" />
+    <None Include="cmake\config.cmake.in">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\headerlist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
+    <None Include="cmake\sourcelist.cmake">
+      <Filter>.cmake</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="api">
@@ -378,6 +388,9 @@
     </Filter>
     <Filter Include="papyrus\functions">
       <UniqueIdentifier>{53266a9e-d65a-4ef4-b936-685b8012d3c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".cmake">
+      <UniqueIdentifier>{6e03a034-5fea-411b-a64b-26f712a7d571}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -708,5 +721,8 @@
     <ClInclude Include="GameHandle.h">
       <Filter>api</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

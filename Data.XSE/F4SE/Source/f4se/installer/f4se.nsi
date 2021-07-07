@@ -66,10 +66,10 @@ Section "!F4SE Core"
 	!insertmacro InstallLib DLL NOTSHARED NOREBOOT_NOTPROTECTED f4se_1_10_82.dll $INSTDIR\f4se_1_10_82.dll $INSTDIR
 	!insertmacro InstallLib DLL NOTSHARED NOREBOOT_NOTPROTECTED f4se_steam_loader.dll $INSTDIR\f4se_steam_loader.dll $INSTDIR
 	!insertmacro InstallLib DLL NOTSHARED NOREBOOT_NOTPROTECTED f4se_loader.exe $INSTDIR\f4se_loader.exe $INSTDIR
-	
+
 	# Papyrus scripts
 	File /r Data
-	
+
 	# Docs
 	File f4se_readme.txt
 	File f4se_whatsnew.txt
@@ -98,7 +98,7 @@ Section "Desktop Shortcut"
 SectionEnd
 
 ;Section "Start Menu"
-		
+
 ;SectionEnd
 
 ; basic f4 install directory validation

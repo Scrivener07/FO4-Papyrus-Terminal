@@ -138,7 +138,7 @@ public:
 
 		InitParams(vm);
 	}
-	
+
 	void InitParams(VirtualMachine * vm)
 	{
 #if NUM_PARAMS >= 1

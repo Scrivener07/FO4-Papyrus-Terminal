@@ -25,6 +25,6 @@ void BGSInventoryItem::Stack::Dump()
 		next->Dump();
 		gLog.Outdent();
 	}
-	
+
 }
 #endif

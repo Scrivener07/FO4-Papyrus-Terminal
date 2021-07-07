@@ -184,7 +184,7 @@ public:
 	virtual void	Unk_C3();
 
 	enum { kTypeID = kFormType_REFR };
-	
+
 	// parents
 	BSHandleRefObject							handleRefObject;		// 20
 	BSTEventSink <BSActiveGraphIfInactiveEvent>	activeGraphIfInactive;	// 30
@@ -430,7 +430,7 @@ public:
 		Data08 * unk08;	// 08
 
 		MEMBER_FN_PREFIX(MiddleProcess);
-		DEFINE_MEMBER_FN(UpdateEquipment, void, 0x00E60860, Actor * actor, UInt32 flags); 
+		DEFINE_MEMBER_FN(UpdateEquipment, void, 0x00E60860, Actor * actor, UInt32 flags);
 	};
 	MiddleProcess * middleProcess;					// 300
 	UInt64	unk308[(0x338-0x308)/8];

@@ -22,6 +22,15 @@
     <ClInclude Include="LoaderError.h" />
     <ClInclude Include="Steam.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="cmake\config.cmake.in" />
+    <None Include="cmake\headerlist.cmake" />
+    <None Include="cmake\sourcelist.cmake" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BE858737-949E-48CF-ADF9-079389049B57}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

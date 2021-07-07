@@ -1,25 +1,18 @@
 ﻿package Computer
 {
-	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
-	import flash.events.*;
 	import flash.events.Event;
-	import flash.net.URLLoader;
-	import flash.net.URLRequest;
 	import System.Diagnostics.Debug;
 	import System.Diagnostics.Utility;
-	import System.Display;
-	import Computer.OS.DriveType;
-	import PapyrusTerminal;
 	import F4SE.XSE;
+	import PapyrusTerminal;
+	import Computer.OS.DriveType;
+	import Computer.OS.Kernel;
 
 	public class Computer extends MovieClip
 	{
 		// Menu
-		private var MenuRoot:PapyrusTerminal;
-
-		// External Events
-		private const COMMAND_TYPE_LoadCompleteEvent:String = "Computing:COMMAND_TYPE_LoadCompleteEvent";
+		private var Terminal:PapyrusTerminal;
 
 		// Computer Components
 		private var Drive:DriveType;
@@ -43,7 +36,7 @@
 
 			try
 			{
-				MenuRoot = stage.getChildByName("root1") as PapyrusTerminal;
+				Terminal = stage.getChildByName("root1") as PapyrusTerminal;
 				XSE.API = PapyrusTerminal.F4SE;
 				Utility.TraceObject(XSE.API);
 			}
@@ -58,6 +51,15 @@
 
 		// Commands
 		//---------------------------------------------
+
+		//@Papyrus
+		// Supports the CLI command history.
+		public function Invoke(path:*):void
+		{
+			Debug.WriteLine("[Computer]", "(Invoke)", String(path));
+			Utility.TraceObject(path);
+		}
+
 
 		//@Papyrus
 		// Displays the name of or changes the current directory.
@@ -79,56 +81,39 @@
 		// Displays a list of files and subdirectories in a directory.
 		public function DIR(path:String):*
 		{
-			// This needs a path parameter to list directories other than current.
+			// TODO: This needs a path parameter to list directories other than current.
 			return Drive.DirectoryList();
 		}
 
 
 		//@Papyrus
 		// Prints a text file.
-		// TODO:
-		//   A relative path which target the root directory.
-		//   The problem is the scaleform loader is rooted to `Programs\`.
-		//   Attempt to move up a directory results in `Programs\..\path\to\file.txt`
-		//   This may need to be handled with XSE.
-		// TODO:
-		//   Check if file exists using the xse directory listing.
 		public function TYPE(filename:String):Boolean
 		{
-			var directory:String = Drive.GetDirectory();
-			var filepath:String = "..\\" + directory + "\\" + filename;
+			Debug.WriteLine("[Computer]", "(TYPE)", "filename: "+filename);
+			var directory:String = Drive.GetDirectoryFull();
+			var filepath:String = directory + "\\" + filename;
 
-			Debug.WriteLine("[Computer]", "(TYPE)");
-			Debug.WriteLine("+----", "filename: "+filename);
-			Debug.WriteLine("+----", "directory: "+directory);
-			Debug.WriteLine("+----", "filepath: "+filepath);
+			Debug.WriteLine("[Computer]", "(TYPE)", "directory: "+directory);
+			Debug.WriteLine("[Computer]", "(TYPE)", "filepath: "+filepath);
 
-			var fileLoader:URLLoader = new URLLoader();
-			fileLoader.addEventListener(IOErrorEvent.IO_ERROR, this.OnTypeCommand_LoadError);
-			fileLoader.addEventListener(Event.COMPLETE, this.OnTypeCommand_LoadComplete);
-			fileLoader.load(new URLRequest(filepath));
-			return true;
-		}
-
-		private function OnTypeCommand_LoadError(e:IOErrorEvent):void
-		{
-			Debug.WriteLine("[Computer]", "(TYPE)", "(OnTypeCommand_LoadError)", "e:"+String(e), e.toString());
-		}
-
-		private function OnTypeCommand_LoadComplete(e:Event):void
-		{
-			Debug.WriteLine("[Computer]", "(TYPE)", "(OnTypeCommand_LoadComplete)", "e:"+String(e), e.toString(), "length:"+lines.length);
-
-			var index:int = 0;
-			var lines:Array = e.target.data.split(/\n/);
-			for each (var line in lines)
+			var lines:Array = Kernel.GetFileText(filepath);
+			if (lines)
 			{
-				Debug.WriteLine("[Computer]", "(TYPE)", "(OnTypeCommand_LoadComplete)", "@"+index, "line:", line);
-				MenuRoot.PrintLinePapyrus(String(line));
-				index += 1;
+				var number:int = 1;
+				for each (var line in lines)
+				{
+					Debug.WriteLine("[Computer]", "(TYPE)", "#"+number, line);
+					Terminal.PrintLinePapyrus(String(line));
+					number += 1;
+				}
+				return true;
 			}
-
-			XSE.API.SendExternalEvent(COMMAND_TYPE_LoadCompleteEvent, lines);
+			else
+			{
+				Debug.WriteLine("[Computer]", "(TYPE)", "GetFileText: null or undefined");
+				return false;
+			}
 		}
 
 
