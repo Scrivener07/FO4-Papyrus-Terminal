@@ -1,6 +1,6 @@
 # Fallout 4 - Papyrus Terminal
 A terminal with advanced Papyrus support, by niston. 
-This codebase will not be developed further, follow [niston's repository](github.com/niston/papyrusterminal) instead.
+This codebase will not be developed further, follow [niston's repository](https://github.com/niston/PapyrusTerminal) instead.
 
 
 ### [F4SE](https://github.com/ianpatt/f4se)
